@@ -1,0 +1,37 @@
+# Maven
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Logs y datos locales
+**/logs/
+**/*.log
+
+# Secretos de laboratorio
+**/.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Python / MkDocs (solo local para PDF)
+.venv/
+__pycache__/
+site/
+requirements-docs.txt
+mkdocs.yml
+
+# Entregables y evidencia (van a la plataforma, no al repo)
+*.pdf
+docs/sesiones/
+docs/index.md
+docs/servicios/
+docs/stylesheets/
+
+# SO
+Thumbs.db
+Desktop.ini
+.DS_Store
