@@ -1,11 +1,11 @@
 server:
-  port: 8080
+  port: 8180
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:15432/pagatu_catalogo_db
-    username: pagatu
-    password: pagatu
+    url: jdbc:postgresql://localhost:16432/chaskawear_catalogo_db
+    username: chaska
+    password: chaska
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
@@ -31,11 +31,19 @@ logging:
   level:
     pe.edu.upeu.catalogo: DEBUG
 
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:17761/eureka
+
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: always

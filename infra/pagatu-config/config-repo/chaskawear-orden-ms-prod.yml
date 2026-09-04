@@ -18,6 +18,11 @@ spring:
       hibernate:
         format_sql: false
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://chaskawear-eureka:8761/eureka
+
 springdoc:
   swagger-ui:
     enabled: false
@@ -28,7 +33,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: never

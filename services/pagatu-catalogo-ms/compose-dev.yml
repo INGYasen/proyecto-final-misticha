@@ -1,18 +1,18 @@
-name: pagatu-catalogo-dev
+name: chaskawear-catalogo-dev
 
 services:
   postgres-catalogo-dev:
     image: postgres:16-alpine
-    container_name: pagatu-postgres-catalogo-dev
+    container_name: chaskawear-postgres-catalogo-dev
     restart: unless-stopped
     environment:
-      POSTGRES_DB: pagatu_catalogo_db
-      POSTGRES_USER: pagatu
-      POSTGRES_PASSWORD: pagatu
+      POSTGRES_DB: chaskawear_catalogo_db
+      POSTGRES_USER: chaska
+      POSTGRES_PASSWORD: chaska
     ports:
-      - "15432:5432"
+      - "16432:5432"
     volumes:
-      - pagatu_catalogo_dev_data:/var/lib/postgresql/data
+      - chaskawear_catalogo_dev_data:/var/lib/postgresql/data
 
 volumes:
-  pagatu_catalogo_dev_data:
+  chaskawear_catalogo_dev_data:

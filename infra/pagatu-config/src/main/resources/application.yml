@@ -1,9 +1,9 @@
 server:
-  port: 18888
+  port: 17888
 
 spring:
   application:
-    name: pagatu-config
+    name: chaskawear-config
   profiles:
     active: native
   cloud:

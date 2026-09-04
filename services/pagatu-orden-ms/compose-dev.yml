@@ -1,18 +1,18 @@
-name: pagatu-orden-dev
+name: chaskawear-orden-dev
 
 services:
   postgres-orden-dev:
     image: postgres:16-alpine
-    container_name: pagatu-postgres-orden-dev
+    container_name: chaskawear-postgres-orden-dev
     restart: unless-stopped
     environment:
-      POSTGRES_DB: pagatu_orden_db
-      POSTGRES_USER: pagatu
-      POSTGRES_PASSWORD: pagatu
+      POSTGRES_DB: chaskawear_orden_db
+      POSTGRES_USER: chaska
+      POSTGRES_PASSWORD: chaska
     ports:
-      - "15434:5432"
+      - "16434:5432"
     volumes:
-      - pagatu_orden_dev_data:/var/lib/postgresql/data
+      - chaskawear_orden_dev_data:/var/lib/postgresql/data
 
 volumes:
-  pagatu_orden_dev_data:
+  chaskawear_orden_dev_data:

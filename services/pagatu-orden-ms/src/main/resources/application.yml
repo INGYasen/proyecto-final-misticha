@@ -1,10 +1,7 @@
 spring:
   application:
-    name: pagatu-orden-ms
+    name: chaskawear-orden-ms
   profiles:
     active: dev
-  cloud:
-    config:
-      name: orden-ms
   config:
-    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:17888}"

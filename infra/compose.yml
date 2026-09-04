@@ -1,14 +1,14 @@
-name: pagatu-infra-prod
+name: chaskawear-infra-prod
 
 services:
-  pagatu-config:
+  chaskawear-config:
     build:
       context: ./pagatu-config
       dockerfile: Dockerfile
-    container_name: pagatu-config
+    container_name: chaskawear-config
     restart: unless-stopped
     ports:
-      - "28888:8888"
+      - "27888:8888"
     volumes:
       - ./pagatu-config/config-repo:/config-repo
     environment:
@@ -16,8 +16,8 @@ services:
       SPRING_PROFILES_ACTIVE: native
       CONFIG_REPO_LOCATION: file:/config-repo
     networks:
-      - pagatu-prod-net
+      - chaskawear-prod-net
 
 networks:
-  pagatu-prod-net:
-    name: pagatu-prod-net
+  chaskawear-prod-net:
+    name: chaskawear-prod-net

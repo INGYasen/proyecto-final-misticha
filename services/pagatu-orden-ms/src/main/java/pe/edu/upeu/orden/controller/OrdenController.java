@@ -13,7 +13,7 @@ import pe.edu.upeu.orden.service.OrdenService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ordenes")
+@RequestMapping("/api/v1/ordenes")
 @RequiredArgsConstructor
 @Tag(name = "Ordenes", description = "Gestion de ordenes de compra del dominio orden-ms")
 public class OrdenController {

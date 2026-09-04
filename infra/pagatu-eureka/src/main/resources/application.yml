@@ -1,6 +1,9 @@
+server:
+  port: 17761
+
 spring:
   application:
-    name: chaskawear-catalogo-ms
+    name: chaskawear-eureka
   profiles:
     active: dev
   config:

@@ -13,7 +13,7 @@ import pe.edu.upeu.orden.service.OrdenDetalleService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orden-detalles")
+@RequestMapping("/api/v1/orden-detalles")
 @RequiredArgsConstructor
 @Tag(name = "Detalles de orden", description = "Lineas de cada orden; referencian por id a los productos de pagatu-catalogo-ms")
 public class OrdenDetalleController {
