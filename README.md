@@ -6,8 +6,8 @@ Repo: https://github.com/INGYasen/proyecto-final-misticha
 
 ## Integrantes
 
-- Yasen Cutipa Mayhua — catalogo-ms, orden-ms
-- Russman Keny Torres Lopez — pago-ms, auth-ms
+- Yasen Cutipa Mayhua — catalogo-ms, orden-ms, inventario-ms
+- Russman Keny Torres Lopez — pago-ms, auth-ms, notificacion-ms
 
 ## DEV (hasta S3)
 
