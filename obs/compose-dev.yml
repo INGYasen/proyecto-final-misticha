@@ -1,0 +1,51 @@
+name: chaskawear-obs-dev
+
+services:
+  chaskawear-prometheus:
+    image: prom/prometheus:v3.14.0
+    container_name: chaskawear-prometheus-dev
+    restart: unless-stopped
+    ports:
+      - "18090:9090"
+    volumes:
+      - ./prometheus/prometheus-dev.yml:/etc/prometheus/prometheus.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  chaskawear-loki:
+    image: grafana/loki:3.7.6
+    container_name: chaskawear-loki-dev
+    restart: unless-stopped
+    ports:
+      - "12100:3100"
+
+  chaskawear-promtail:
+    image: grafana/promtail:3.6.8
+    container_name: chaskawear-promtail-dev
+    restart: unless-stopped
+    volumes:
+      - ./promtail/promtail-config-dev.yml:/etc/promtail/config.yml:ro
+      - ../services/pagatu-catalogo-ms/logs:/var/log/chaskawear-catalogo-ms:ro
+      - ../services/pagatu-orden-ms/logs:/var/log/chaskawear-orden-ms:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - chaskawear-loki
+
+  chaskawear-grafana:
+    image: grafana/grafana:11.4.0
+    container_name: chaskawear-grafana-dev
+    restart: unless-stopped
+    ports:
+      - "12000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - chaskawear-prometheus
+      - chaskawear-loki

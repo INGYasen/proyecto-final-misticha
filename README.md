@@ -14,7 +14,7 @@ Repo: https://github.com/INGYasen/proyecto-final-misticha
 
 Infra compartida: Config Server, Eureka, Gateway.
 
-## DEV hasta S4
+## DEV hasta S4 (+ observabilidad)
 
 | Servicio | Puerto / recurso |
 |----------|------------------|
@@ -25,8 +25,11 @@ Infra compartida: Config Server, Eureka, Gateway.
 | Orden (Yasen) | 8182 / 8183 |
 | Postgres catálogo | 16432 · `chaskawear_catalogo_db` |
 | Postgres orden | 16434 · `chaskawear_orden_db` |
+| **Grafana** | **12000** (admin / admin123) |
+| Prometheus | 18090 |
+| Loki | 12100 |
 
-Usuario BD: `chaska` / `chaska`.
+Usuario BD: `chaska` / `chaska`. Distinto de Pagatu (Grafana 13000 / Prometheus 19090).
 
 ### Llamar por el Gateway
 
@@ -34,6 +37,13 @@ Usuario BD: `chaska` / `chaska`.
 http://localhost:17080/api/v1/categorias
 http://localhost:17080/api/v1/productos
 http://localhost:17080/api/v1/ordenes
+```
+
+### Observabilidad
+
+```powershell
+cd obs
+docker compose -f compose-dev.yml up -d
 ```
 
 Pendientes: inventario-ms (Yasen), pago-ms, auth-ms, notificacion-ms (Russman).

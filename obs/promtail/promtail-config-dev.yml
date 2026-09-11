@@ -1,0 +1,23 @@
+server:
+  http_listen_port: 9080
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://chaskawear-loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: chaskawear-catalogo-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: chaskawear-catalogo-ms
+          __path__: /var/log/chaskawear-catalogo-ms/*.log
+
+  - job_name: chaskawear-orden-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: chaskawear-orden-ms
+          __path__: /var/log/chaskawear-orden-ms/*.log
