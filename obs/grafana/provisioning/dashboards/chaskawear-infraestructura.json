@@ -87,19 +87,21 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
       "id": 5,
-      "options": { "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{application=~\"chaskawear-.*\"}",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(http_server_requests_seconds_count{job=\"chaskawear-microservicios\",status=~\"5..\"}[5m])) or vector(0)",
+          "legendFormat": "5xx",
           "refId": "A"
         }
       ],
-      "title": "Logs recientes",
-      "type": "logs"
+      "title": "Errores HTTP 5xx",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",

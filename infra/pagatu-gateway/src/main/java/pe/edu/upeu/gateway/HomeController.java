@@ -24,17 +24,14 @@ public class HomeController {
 			    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 			    a.card { display: block; background: #2a1c16; border: 1px solid #5c3a2a; border-radius: 10px; padding: 16px; color: #f4ece6; text-decoration: none; }
 			    a.card:hover { border-color: #c45c26; }
-			    .ok { color: #8fdf8f; font-weight: 600; }
-			    code { background: #3a241c; padding: 2px 6px; border-radius: 4px; }
 			  </style>
 			</head>
 			<body>
 			  <header>
-			    <h1>ChaskaWear — Punto único de acceso</h1>
-			    <div class="clock">Ahora: <span id="now"></span> · Equipo 12</div>
+			    <h1>ChaskaWear</h1>
+			    <div class="clock"><span id="now"></span> · Equipo 12</div>
 			  </header>
 			  <main>
-			    <p class="ok">El Gateway está arriba. No uses solo <code>/</code> para las APIs: entra por las rutas de abajo.</p>
 			    <div class="grid">
 			      <a class="card" href="/api/v1/categorias"><b>Catálogo · categorías</b><br/>GET /api/v1/categorias</a>
 			      <a class="card" href="/api/v1/productos"><b>Catálogo · productos</b><br/>GET /api/v1/productos</a>
