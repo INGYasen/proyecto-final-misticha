@@ -2,8 +2,13 @@ server:
   port: 17761
 
 eureka:
+  dashboard:
+    enabled: true
+    path: /
   server:
-    enable-self-preservation: false
+    enable-self-preservation: true
+    eviction-interval-timer-in-ms: 5000
+    response-cache-update-interval-ms: 3000
   client:
     register-with-eureka: false
     fetch-registry: false

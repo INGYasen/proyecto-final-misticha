@@ -34,7 +34,7 @@
       "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
       "gridPos": { "h": 6, "w": 16, "x": 8, "y": 0 },
       "id": 2,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -43,8 +43,8 @@
           "refId": "A"
         }
       ],
-      "title": "Uptime por instancia",
-      "type": "timeseries"
+      "title": "Tiempo en ejecución (uptime)",
+      "type": "stat"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -55,8 +55,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum by (instance) (rate(http_server_requests_seconds_count{job=\"chaskawear-microservicios\"}[1m]))",
-          "legendFormat": "{{instance}}",
+          "expr": "sum by (application, instance) (rate(http_server_requests_seconds_count{job=\"chaskawear-microservicios\"}[1m]))",
+          "legendFormat": "{{application}} {{instance}}",
           "refId": "A"
         }
       ],
@@ -83,33 +83,35 @@
           "refId": "B"
         }
       ],
-      "title": "Conexiones a PostgreSQL (Hikari)",
+      "title": "Pool PostgreSQL (Hikari)",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
       "id": 5,
-      "options": { "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{application=~\"chaskawear-.*\"}",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "rate(http_server_requests_seconds_count{job=\"chaskawear-microservicios\", uri=~\"/api/v1/.*\"}[1m])",
+          "legendFormat": "{{instance}} {{uri}}",
           "refId": "A"
         }
       ],
-      "title": "Logs recientes",
-      "type": "logs"
+      "title": "Tráfico /api/v1 (Gateway y micros)",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": ["chaskawear", "infraestructura"],
+  "tags": ["chaskawear"],
   "templating": { "list": [] },
-  "time": { "from": "now-30m", "to": "now" },
+  "time": { "from": "now-15m", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "ChaskaWear - Infraestructura",
-  "uid": "chaskawear-infraestructura",
+  "title": "ChaskaWear - Inicio",
+  "uid": "chaskawear-inicio",
   "version": 1
 }
