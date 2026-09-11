@@ -1,0 +1,18 @@
+name: chaskawear-pago-dev
+
+services:
+  postgres-pago-dev:
+    image: postgres:16-alpine
+    container_name: chaskawear-postgres-pago-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chaskawear_pago_db
+      POSTGRES_USER: chaska
+      POSTGRES_PASSWORD: chaska
+    ports:
+      - "16438:5432"
+    volumes:
+      - chaskawear_pago_dev_data:/var/lib/postgresql/data
+
+volumes:
+  chaskawear_pago_dev_data:

@@ -7,20 +7,20 @@
 - **Sección:** 5to ciclo — Aplicaciones Distribuidas 2026-2
 - **Repositorio:** https://github.com/INGYasen/proyecto-final-misticha
 
-| Integrante | Microservicios a cargo (3 c/u) |
-|------------|-------------------------------|
+| Integrante | Microservicios (3 c/u) |
+|------------|------------------------|
 | Yasen Cutipa Mayhua | `catalogo-ms`, `orden-ms`, `inventario-ms` |
 | Russman Keny Torres Lopez | `pago-ms`, `auth-ms`, `notificacion-ms` |
 
 ## 2. Dominio
 
-Ropa artesanal del Cusco (ponchos, chullos, polleras, mantas). Flujo: catálogo → stock → orden → pago → aviso al cliente (Mercado Pago sandbox).
+Ropa artesanal del Cusco (ponchos, chullos, polleras, mantas). El cliente entra por el Gateway, ve el catálogo, consulta stock, arma la orden, paga y recibe un aviso. Cobro con Mercado Pago en sandbox.
 
-Bases y apps propias: `chaskawear_*` (no se mezclan con Pagatu).
+Bases y apps: `chaskawear_*` (no se mezclan con Pagatu).
 
-## 3. Microservicios (quién hace qué)
+## 3. Microservicios
 
-Cada integrante lleva **mínimo dos** microservicios; en este equipo repartimos **tres** por persona.
+Cada integrante lleva tres microservicios: uno transaccional y dos de apoyo.
 
 | Integrante | Transaccional | No transaccionales | Qué hace |
 |------------|---------------|--------------------|----------|
@@ -29,61 +29,33 @@ Cada integrante lleva **mínimo dos** microservicios; en este equipo repartimos 
 
 Infra compartida: Config Server, Eureka, Gateway, Prometheus y Grafana.
 
-## 4. Arquitectura (hasta S4)
+## 4. Arquitectura
 
-El cliente no llama a cada microservicio por puerto. Entra por el Gateway (`17080`). El Gateway pregunta a Eureka qué instancias están vivas y reparte con `lb://`.
+El cliente no llama a cada microservicio por puerto. Entra por el Gateway (`17080`). El Gateway pregunta a Eureka qué instancias están vivas y reparte con `lb://`. Cada servicio lee su YAML desde Config Server.
 
-```mermaid
-flowchart TB
-  Cliente["Cliente / PowerShell / navegador"]
-  GW["chaskawear-gateway :17080"]
-  EU["chaskawear-eureka :17761"]
-  CFG["chaskawear-config :17888"]
-  C1["catalogo-ms :8180"]
-  C2["catalogo-ms :8181"]
-  O1["orden-ms :8182"]
-  PG1[("chaskawear_catalogo_db :16432")]
-  PG2[("chaskawear_orden_db :16434")]
-  PROM["Prometheus :18090"]
-  GRAF["Grafana :12000"]
+Flujo de negocio: catálogo → inventario → orden → pago → notificación.
 
-  Cliente --> GW
-  GW -->|"lb://chaskawear-catalogo-ms"| C1
-  GW -->|"lb://chaskawear-catalogo-ms"| C2
-  GW -->|"lb://chaskawear-orden-ms"| O1
-  GW -.-> EU
-  C1 -.-> EU
-  C2 -.-> EU
-  O1 -.-> EU
-  GW -.-> CFG
-  C1 -.-> CFG
-  O1 -.-> CFG
-  C1 --> PG1
-  C2 --> PG1
-  O1 --> PG2
-  PROM -.-> EU
-  GRAF --> PROM
-```
-
-Qué hay **corriendo ahora** vs **previsto**:
-
-| Componente | App | Quién | Puerto DEV | Estado |
-|------------|-----|-------|------------|--------|
-| Config | chaskawear-config | equipo | 17888 | S2 · listo |
-| Eureka | chaskawear-eureka | equipo | 17761 | S3 · listo |
-| Gateway | chaskawear-gateway | equipo | 17080 | S4 · listo |
-| Catálogo | chaskawear-catalogo-ms | Yasen | 8180 / 8181 | S1–S4 · listo |
-| Orden | chaskawear-orden-ms | Yasen | 8182 | S1–S4 · listo |
-| Grafana / Prometheus | obs DEV | equipo | 12000 / 18090 | S4 opcional · listo |
-| Inventario | chaskawear-inventario-ms | Yasen | por definir | siguiente |
-| Pago | chaskawear-pago-ms | Russman | por definir | siguiente |
-| Auth | chaskawear-auth-ms | Russman | por definir | siguiente |
-| Notificación | chaskawear-notificacion-ms | Russman | por definir | siguiente |
+| Componente | App | Quién | Puerto DEV |
+|------------|-----|-------|------------|
+| Config | chaskawear-config | equipo | 17888 |
+| Eureka | chaskawear-eureka | equipo | 17761 |
+| Gateway | chaskawear-gateway | equipo | 17080 |
+| Catálogo | chaskawear-catalogo-ms | Yasen | 8180 / 8181 |
+| Orden | chaskawear-orden-ms | Yasen | 8182 |
+| Inventario | chaskawear-inventario-ms | Yasen | 8184 |
+| Pago | chaskawear-pago-ms | Russman | 8186 |
+| Auth | chaskawear-auth-ms | Russman | 8188 |
+| Notificación | chaskawear-notificacion-ms | Russman | 8190 |
+| Grafana / Prometheus | obs DEV | equipo | 12000 / 18090 |
 
 Rutas del Gateway:
 
-- `/api/v1/categorias/**`, `/api/v1/productos/**` → catálogo (8180 y 8181)
-- `/api/v1/ordenes/**`, `/api/v1/orden-detalles/**` → orden (8182)
+- `/api/v1/categorias/**`, `/api/v1/productos/**` → catálogo
+- `/api/v1/ordenes/**`, `/api/v1/orden-detalles/**` → orden
+- `/api/v1/stocks/**`, `/api/v1/movimientos/**` → inventario
+- `/api/v1/pagos/**`, `/api/v1/transacciones/**` → pago
+- `/api/v1/usuarios/**`, `/api/v1/roles/**` → auth
+- `/api/v1/avisos/**`, `/api/v1/canales/**` → notificación
 
 ## 5. Aprobación
 

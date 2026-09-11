@@ -1,0 +1,18 @@
+name: chaskawear-inventario-dev
+
+services:
+  postgres-inventario-dev:
+    image: postgres:16-alpine
+    container_name: chaskawear-postgres-inventario-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chaskawear_inventario_db
+      POSTGRES_USER: chaska
+      POSTGRES_PASSWORD: chaska
+    ports:
+      - "16436:5432"
+    volumes:
+      - chaskawear_inventario_dev_data:/var/lib/postgresql/data
+
+volumes:
+  chaskawear_inventario_dev_data:

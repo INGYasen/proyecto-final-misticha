@@ -32,6 +32,8 @@ docs/servicios/
 docs/stylesheets/
 docs/proyecto-sello/capturas/
 docs/proyecto-sello/brief.html
+docs/proyecto-sello/generar-pdfs.py
+scripts/generar-ms.py
 logs/
 
 # SO

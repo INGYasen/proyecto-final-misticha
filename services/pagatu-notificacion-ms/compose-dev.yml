@@ -1,0 +1,18 @@
+name: chaskawear-notificacion-dev
+
+services:
+  postgres-notificacion-dev:
+    image: postgres:16-alpine
+    container_name: chaskawear-postgres-notificacion-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chaskawear_notificacion_db
+      POSTGRES_USER: chaska
+      POSTGRES_PASSWORD: chaska
+    ports:
+      - "16442:5432"
+    volumes:
+      - chaskawear_notificacion_dev_data:/var/lib/postgresql/data
+
+volumes:
+  chaskawear_notificacion_dev_data:

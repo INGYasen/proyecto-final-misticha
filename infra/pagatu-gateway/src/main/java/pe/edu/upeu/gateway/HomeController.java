@@ -36,6 +36,10 @@ public class HomeController {
 			      <a class="card" href="/api/v1/categorias"><b>Catálogo · categorías</b><br/>GET /api/v1/categorias</a>
 			      <a class="card" href="/api/v1/productos"><b>Catálogo · productos</b><br/>GET /api/v1/productos</a>
 			      <a class="card" href="/api/v1/ordenes"><b>Órdenes</b><br/>GET /api/v1/ordenes</a>
+			      <a class="card" href="/api/v1/stocks"><b>Inventario · stock</b><br/>GET /api/v1/stocks</a>
+			      <a class="card" href="/api/v1/pagos"><b>Pagos</b><br/>GET /api/v1/pagos</a>
+			      <a class="card" href="/api/v1/usuarios"><b>Auth · usuarios</b><br/>GET /api/v1/usuarios</a>
+			      <a class="card" href="/api/v1/avisos"><b>Notificaciones</b><br/>GET /api/v1/avisos</a>
 			      <a class="card" href="/actuator/health"><b>Health del Gateway</b><br/>/actuator/health</a>
 			      <a class="card" href="http://localhost:17761"><b>Eureka</b><br/>instancias registradas</a>
 			      <a class="card" href="http://localhost:18090/targets"><b>Prometheus · Targets</b><br/>microservicios activos</a>

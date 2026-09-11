@@ -23,6 +23,38 @@ spring:
               uri: lb://chaskawear-orden-ms
               predicates:
                 - Path=/api/v1/orden-detalles/**
+            - id: chaskawear-inventario-stocks
+              uri: lb://chaskawear-inventario-ms
+              predicates:
+                - Path=/api/v1/stocks/**
+            - id: chaskawear-inventario-movimientos
+              uri: lb://chaskawear-inventario-ms
+              predicates:
+                - Path=/api/v1/movimientos/**
+            - id: chaskawear-pago-pagos
+              uri: lb://chaskawear-pago-ms
+              predicates:
+                - Path=/api/v1/pagos/**
+            - id: chaskawear-pago-transacciones
+              uri: lb://chaskawear-pago-ms
+              predicates:
+                - Path=/api/v1/transacciones/**
+            - id: chaskawear-auth-usuarios
+              uri: lb://chaskawear-auth-ms
+              predicates:
+                - Path=/api/v1/usuarios/**
+            - id: chaskawear-auth-roles
+              uri: lb://chaskawear-auth-ms
+              predicates:
+                - Path=/api/v1/roles/**
+            - id: chaskawear-notificacion-avisos
+              uri: lb://chaskawear-notificacion-ms
+              predicates:
+                - Path=/api/v1/avisos/**
+            - id: chaskawear-notificacion-canales
+              uri: lb://chaskawear-notificacion-ms
+              predicates:
+                - Path=/api/v1/canales/**
 
 eureka:
   instance:
