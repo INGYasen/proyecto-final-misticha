@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: chaskawear-catalogo-categorias
+              uri: lb://chaskawear-catalogo-ms
+              predicates:
+                - Path=/api/v1/categorias/**
+            - id: chaskawear-catalogo-productos
+              uri: lb://chaskawear-catalogo-ms
+              predicates:
+                - Path=/api/v1/productos/**
+            - id: chaskawear-orden-ordenes
+              uri: lb://chaskawear-orden-ms
+              predicates:
+                - Path=/api/v1/ordenes/**
+            - id: chaskawear-orden-detalles
+              uri: lb://chaskawear-orden-ms
+              predicates:
+                - Path=/api/v1/orden-detalles/**
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://chaskawear-eureka:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never

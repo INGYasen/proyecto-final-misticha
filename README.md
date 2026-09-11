@@ -14,12 +14,13 @@ Repo: https://github.com/INGYasen/proyecto-final-misticha
 
 Infra compartida: Config Server, Eureka, Gateway.
 
-## DEV (hasta S3 — ya corriendo)
+## DEV hasta S4
 
 | Servicio | Puerto / recurso |
 |----------|------------------|
 | Config | 17888 |
 | Eureka | 17761 |
+| **Gateway** | **17080** (punto único) |
 | Catálogo (Yasen) | 8180 / 8181 |
 | Orden (Yasen) | 8182 / 8183 |
 | Postgres catálogo | 16432 · `chaskawear_catalogo_db` |
@@ -27,4 +28,12 @@ Infra compartida: Config Server, Eureka, Gateway.
 
 Usuario BD: `chaska` / `chaska`.
 
-Pendientes (mismas bases `chaskawear_*`): inventario-ms (Yasen), pago-ms, auth-ms, notificacion-ms (Russman).
+### Llamar por el Gateway
+
+```text
+http://localhost:17080/api/v1/categorias
+http://localhost:17080/api/v1/productos
+http://localhost:17080/api/v1/ordenes
+```
+
+Pendientes: inventario-ms (Yasen), pago-ms, auth-ms, notificacion-ms (Russman).

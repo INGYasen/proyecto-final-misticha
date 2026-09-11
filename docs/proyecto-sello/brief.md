@@ -27,14 +27,15 @@ Cada integrante lleva **mínimo dos** microservicios; en este equipo repartimos 
 | Yasen Cutipa Mayhua | **orden-ms** (Orden + OrdenDetalle) | **catalogo-ms** (Categoria + Producto), **inventario-ms** (Stock + Movimiento) | Publica prendas, controla stock y arma el pedido |
 | Russman Keny Torres Lopez | **pago-ms** (Pago + Transaccion) | **auth-ms** (Usuario + Rol), **notificacion-ms** (Aviso + Canal) | Identifica al usuario, cobra y avisa el estado del pedido |
 
-Infra compartida del equipo (no cuenta como micro de una sola persona): Config Server, Eureka y Gateway.
+Infra compartida del equipo: Config Server, Eureka y Gateway.
 
-## 4. Arquitectura prevista / actual
+## 4. Arquitectura hasta S4
 
 | Componente | App | Responsable | Puerto DEV | Base |
 |------------|-----|-------------|------------|------|
 | Config | chaskawear-config | equipo | 17888 | — |
 | Eureka | chaskawear-eureka | equipo | 17761 | — |
+| Gateway | chaskawear-gateway | equipo | **17080** | — (punto único de acceso) |
 | Catálogo | chaskawear-catalogo-ms | Yasen | 8180 / 8181 | chaskawear_catalogo_db @ 16432 |
 | Orden | chaskawear-orden-ms | Yasen | 8182 / 8183 | chaskawear_orden_db @ 16434 |
 | Inventario | chaskawear-inventario-ms | Yasen | por definir | chaskawear_inventario_db |
@@ -42,7 +43,14 @@ Infra compartida del equipo (no cuenta como micro de una sola persona): Config S
 | Auth | chaskawear-auth-ms | Russman | por definir | chaskawear_auth_db |
 | Notificación | chaskawear-notificacion-ms | Russman | por definir | chaskawear_notificacion_db |
 
+### Gateway (S4)
+
+Cliente externo → `http://localhost:17080` → `lb://` vía Eureka:
+
+- `/api/v1/categorias/**`, `/api/v1/productos/**` → catálogo (balanceo 8180/8181)
+- `/api/v1/ordenes/**`, `/api/v1/orden-detalles/**` → orden
+
 ## 5. Aprobación
 
 - **Docente:** Abel Angel Sullon Macalupu
-- **Fecha:** 04/09/2026
+- **Fecha:** 11/09/2026
