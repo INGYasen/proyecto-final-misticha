@@ -71,7 +71,7 @@
   "time": { "from": "now-15m", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "ChaskaWear - Catálogo",
+  "title": "catalogo",
   "uid": "chaskawear-catalogo",
   "version": 1
 }
