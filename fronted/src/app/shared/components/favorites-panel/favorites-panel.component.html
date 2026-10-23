@@ -1,0 +1,34 @@
+<div class="drawer-overlay" [class.visible]="open" (click)="close()"></div>
+
+<aside class="drawer" [class.open]="open" aria-label="Favoritos">
+  <header class="drawer__header">
+    <div>
+      <p>Tu selección</p>
+      <h3>Favoritos <span>({{ items.length }})</span></h3>
+    </div>
+    <button type="button" (click)="close()" aria-label="Cerrar favoritos">✕</button>
+  </header>
+
+  <div class="drawer__body">
+    <article class="fav-item" *ngFor="let item of items">
+      <img [src]="item.urlFoto || 'assets/placeholder.jpg'" [alt]="item.nombrePrenda">
+      <div>
+        <strong>{{ item.nombrePrenda }}</strong>
+        <small *ngIf="item.talla || item.color">{{ item.talla }} · {{ item.color }}</small>
+        <em>S/ {{ item.precio | number:'1.2-2' }}</em>
+        <div class="fav-item__actions">
+          <button type="button" (click)="addToCart(item)">Al carrito</button>
+          <button type="button" class="is-quiet" (click)="remove(item)">Quitar</button>
+        </div>
+      </div>
+    </article>
+
+    <div class="drawer__empty" *ngIf="!items.length">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+      </svg>
+      <p>Todavía no guardaste prendas.</p>
+      <button type="button" class="btn-outline" (click)="goCatalog()">Ver catálogo</button>
+    </div>
+  </div>
+</aside>

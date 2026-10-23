@@ -1,0 +1,23 @@
+server:
+  port: 7091
+
+spring:
+  application:
+    name: gateway
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}  # ← lee la variable de entorno, dev como default
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:7071}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO

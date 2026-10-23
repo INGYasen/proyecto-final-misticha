@@ -1,0 +1,53 @@
+name: ms-ventas-prod
+
+services:
+  mysql-ventas:
+    image: mysql:8.0
+    container_name: mysql-ventas
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${VENTAS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${VENTAS_MYSQL_DATABASE}
+    ports:  
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${VENTAS_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_ventas_data:/var/lib/mysql
+    networks:
+      - ventas-int
+
+  ms-ventas:
+    build: .
+    container_name: ms-ventas
+    restart: unless-stopped
+    depends_on:
+      mysql-ventas:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      VENTAS_DB_HOST: mysql-ventas
+      VENTAS_DB_PORT: 3306
+      VENTAS_DB_NAME: ${VENTAS_MYSQL_DATABASE}
+      VENTAS_DB_USERNAME: root
+      VENTAS_DB_PASSWORD: ${VENTAS_MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8188:8188"
+    networks:
+      - ventas-int
+      - ms-net
+
+volumes:
+  mysql_ventas_data:
+
+networks:
+  ms-net:
+    external: true
+    name: ms-net
+  ventas-int:
+    name: ventas-int

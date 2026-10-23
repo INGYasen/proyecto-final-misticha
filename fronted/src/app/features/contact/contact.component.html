@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Contacto</h1>
+    <nav class="breadcrumb">
+      <a routerLink="/">Inicio</a><span>/</span><span>Contacto</span>
+    </nav>
+  </div>
+</div>
+
+<section class="contact">
+  <div class="container contact__grid">
+    <div class="contact__info">
+      <p class="contact__kicker">Raymi Suprême</p>
+      <h2>Escríbenos o llámanos</h2>
+      <p class="contact__lead">
+        Atendemos consultas de pedidos, tallas y prendas tejidas a mano desde Puno.
+      </p>
+
+      <a class="contact-card" [href]="'tel:' + phoneTel">
+        <span>Teléfono</span>
+        <strong>+51 {{ phoneDisplay }}</strong>
+        <small>Toca para llamar</small>
+      </a>
+
+      <a class="contact-card" [href]="whatsapp" target="_blank" rel="noopener">
+        <span>WhatsApp</span>
+        <strong>+51 {{ phoneDisplay }}</strong>
+        <small>Abre un chat directo</small>
+      </a>
+
+      <a class="contact-card" [href]="'mailto:' + email">
+        <span>Correo</span>
+        <strong>{{ email }}</strong>
+        <small>Respuesta en horario de tienda</small>
+      </a>
+
+      <div class="contact-card contact-card--static">
+        <span>Taller</span>
+        <strong>Puno, Perú</strong>
+        <small>Altiplano peruano</small>
+      </div>
+    </div>
+
+    <form class="contact__form" [formGroup]="form" (ngSubmit)="submit()">
+      <h3>Envíanos un mensaje</h3>
+      <p>Se abre WhatsApp con tu texto listo para enviar. No se pierde el mensaje.</p>
+
+      <label class="form-label" for="contacto-nombre">Nombre</label>
+      <input id="contacto-nombre" class="form-control" type="text" formControlName="nombre" autocomplete="name">
+      <p class="field-error" *ngIf="invalid('nombre')">Escribe tu nombre.</p>
+
+      <label class="form-label" for="contacto-correo">Correo</label>
+      <input id="contacto-correo" class="form-control" type="email" formControlName="correo" autocomplete="email">
+      <p class="field-error" *ngIf="invalid('correo')">Ingresa un correo válido.</p>
+
+      <label class="form-label" for="contacto-mensaje">Mensaje</label>
+      <textarea id="contacto-mensaje" class="form-control contact__textarea" rows="5" formControlName="mensaje"></textarea>
+      <p class="field-error" *ngIf="invalid('mensaje')">Cuéntanos un poco más, al menos unas palabras.</p>
+
+      <button class="btn-primary contact__submit" type="submit">Enviar por WhatsApp</button>
+      <p class="contact__sent" *ngIf="sent">WhatsApp se abrió con tu mensaje. Si no lo ves, usa el botón de WhatsApp de la izquierda.</p>
+    </form>
+  </div>
+</section>

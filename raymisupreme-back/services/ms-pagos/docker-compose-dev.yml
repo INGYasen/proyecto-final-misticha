@@ -1,0 +1,16 @@
+name: ms-pagos-dev
+
+services:
+  mysql-pagos:
+    image: mysql:8.0
+    container_name: mysql-pagos-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_pagos
+    ports:
+      - "3321:3306"
+    volumes:
+      - mysql_pagos_dev:/var/lib/mysql
+
+volumes:
+  mysql_pagos_dev:

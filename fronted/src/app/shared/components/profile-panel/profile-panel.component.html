@@ -1,0 +1,44 @@
+<div class="drawer-overlay" [class.visible]="open" (click)="close()"></div>
+
+<aside class="drawer" [class.open]="open" aria-label="Perfil">
+  <header class="drawer__header">
+    <div>
+      <p>Tu cuenta</p>
+      <h3>Perfil</h3>
+    </div>
+    <button type="button" (click)="close()" aria-label="Cerrar perfil">✕</button>
+  </header>
+
+  <div class="drawer__body">
+    <div class="profile-hero">
+      <div class="profile-avatar" aria-hidden="true">{{ initials }}</div>
+      <h4>{{ displayName }}</h4>
+      <span *ngIf="username">&#64;{{ username }}</span>
+    </div>
+
+    <dl class="profile-list">
+      <div>
+        <dt>Correo</dt>
+        <dd>{{ email }}</dd>
+      </div>
+      <div>
+        <dt>Ciudad</dt>
+        <dd>{{ cliente?.ciudad || 'Pendiente' }}</dd>
+      </div>
+      <div>
+        <dt>País</dt>
+        <dd>{{ cliente?.pais || 'Perú' }}</dd>
+      </div>
+      <div>
+        <dt>Dirección</dt>
+        <dd>{{ cliente?.direccionEnvio || 'La completarás al hacer tu primer pedido.' }}</dd>
+      </div>
+    </dl>
+    <p class="profile-note" *ngIf="loading">Buscando tus datos de cliente…</p>
+  </div>
+
+  <footer class="drawer__footer">
+    <button type="button" class="btn-primary" (click)="goOrders()">Mis pedidos</button>
+    <button type="button" class="profile-logout" (click)="logout()">Cerrar sesión</button>
+  </footer>
+</aside>

@@ -1,0 +1,74 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: gateway
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: gateway
+        __path__: /var/log/ms/gateway/*.log
+
+  - job_name: ms-acopio
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-acopio
+        __path__: /var/log/ms/ms-acopio/*.log
+
+  - job_name: ms-auth
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-auth
+        __path__: /var/log/ms/ms-auth/*.log
+
+  - job_name: ms-carrito
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-carrito
+        __path__: /var/log/ms/ms-carrito/*.log
+
+  - job_name: ms-catalogo
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-catalogo
+        __path__: /var/log/ms/ms-catalogo/*.log
+
+  - job_name: ms-inventario
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-inventario
+        __path__: /var/log/ms/ms-inventario/*.log
+
+  - job_name: ms-pagos
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-pagos
+        __path__: /var/log/ms/ms-pagos/*.log
+
+  - job_name: ms-ventas
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        app: ms-ventas
+        __path__: /var/log/ms/ms-ventas/*.log

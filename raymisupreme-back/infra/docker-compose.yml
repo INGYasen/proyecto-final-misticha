@@ -1,0 +1,224 @@
+name: raymisupreme-infra
+
+services:
+
+  # ─── INFRAESTRUCTURA CORE ────────────────────────────────────────────
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      CONFIG_REPO_LOCATION: file:///config-repo
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7071/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  registry-server:
+    build:
+      context: ./registry-server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      CONFIG_SERVER_URL: http://config-server:7071
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7081/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      CONFIG_SERVER_URL: http://config-server:7071
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+    networks:
+      - ms-net
+    # AGREGAR ESTO:
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7091/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  # ─── KEYCLOAK + SU MYSQL ─────────────────────────────────────────────
+
+  mysql-keycloak:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: keycloak_db
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak_pass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - mysql_keycloak_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.2
+    restart: unless-stopped
+    command: start-dev
+    environment:
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://mysql-keycloak:3306/keycloak_db
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_pass
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
+      KC_HEALTH_ENABLED: "true"
+    depends_on:
+      mysql-keycloak:
+        condition: service_healthy
+    networks:
+      - ms-net
+
+  # ─── BASES DE DATOS DE MICROSERVICIOS ────────────────────────────────
+
+  mysql-acopio:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ACOPIO_DB_PASSWORD}
+      MYSQL_DATABASE: ${ACOPIO_DB_NAME}
+    volumes:
+      - mysql_acopio_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${ACOPIO_DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mysql-inventario:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${INVENTARIO_DB_PASSWORD}
+      MYSQL_DATABASE: ${INVENTARIO_DB_NAME}
+    volumes:
+      - mysql_inventario_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${INVENTARIO_DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mysql-ventas:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${VENTAS_DB_PASSWORD}
+      MYSQL_DATABASE: ${VENTAS_DB_NAME}
+    volumes:
+      - mysql_ventas_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${VENTAS_DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mysql-catalogo:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CATALOGO_DB_PASSWORD}
+      MYSQL_DATABASE: ${CATALOGO_DB_NAME}
+    volumes:
+      - mysql_catalogo_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${CATALOGO_DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mysql-pagos:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PAGOS_DB_PASSWORD}
+      MYSQL_DATABASE: ${PAGOS_DB_NAME}
+    volumes:
+      - mysql_pagos_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${PAGOS_DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mysql-carrito:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CARRITO_DB_PASSWORD}
+      MYSQL_DATABASE: ${CARRITO_DB_NAME}
+    volumes:
+      - mysql_carrito_data:/var/lib/mysql
+    networks:
+      - ms-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${CARRITO_DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+networks:
+  ms-net:
+    name: ms-net
+    external: true
+
+volumes:
+  mysql_keycloak_data:
+  mysql_acopio_data:
+  mysql_inventario_data:
+  mysql_ventas_data:
+  mysql_catalogo_data:
+  mysql_pagos_data:
+  mysql_carrito_data:

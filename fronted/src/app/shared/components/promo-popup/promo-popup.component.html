@@ -1,0 +1,79 @@
+<!-- ================================================================
+     PROMO POPUP — RaymiSupreme
+     Ventana emergente de ofertas. No intrusiva (delay 1.5s, auto-cierra 12s)
+================================================================ -->
+<div class="popup-overlay" *ngIf="visible" [class.closing]="closing" (click)="cerrar()">
+    <div class="popup-card" [class.closing]="closing" (click)="$event.stopPropagation()">
+
+        <!-- Botón cerrar -->
+        <button class="popup-close" (click)="cerrar()" aria-label="Cerrar oferta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+
+        <!-- Badge de tipo -->
+        <div class="popup-badge" *ngIf="promo">{{ getTipoLabel(promo.tipo) }}</div>
+
+        <!-- Imagen del producto -->
+        <div class="popup-img-wrap">
+            <img [src]="promo?.urlImagen || 'assets/placeholder.jpg'" [alt]="promo?.nombrePrenda" class="popup-img">
+            <!-- Porcentaje de descuento sobre la imagen -->
+            <div class="popup-discount-badge" *ngIf="promo?.porcentajeDescuento">
+                -{{ promo!.porcentajeDescuento | number:'1.0-0' }}%
+            </div>
+        </div>
+
+        <!-- Contenido -->
+        <div class="popup-body" *ngIf="promo">
+            <h2 class="popup-title">{{ promo.titulo }}</h2>
+            <p class="popup-desc">{{ promo.descripcion }}</p>
+
+            <!-- Precios -->
+            <div class="popup-prices">
+                <span class="popup-price-old">S/ {{ promo.precioBase | number:'1.2-2' }}</span>
+                <span class="popup-price-new">S/ {{ promo.precioFinal | number:'1.2-2' }}</span>
+                <span class="popup-save">
+          Ahorras S/ {{ (promo.precioBase - promo.precioFinal) | number:'1.2-2' }}
+        </span>
+            </div>
+
+            <!-- Indicador de tiempo limitado -->
+            <div class="popup-limited">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Oferta por tiempo limitado
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="popup-actions">
+                <button class="popup-btn-cart" (click)="agregarAlCarrito()" [disabled]="addingToCart">
+                    <span *ngIf="!addingToCart">🛒 Agregar al carrito</span>
+                    <span *ngIf="addingToCart">⏳ Agregando...</span>
+                </button>
+                <button class="popup-btn-detail" (click)="verProducto()">
+                    Ver producto →
+                </button>
+            </div>
+        </div>
+
+        <!-- Carrusel dots (si hay más de 1 promo) -->
+        <div class="popup-dots" *ngIf="promociones.length > 1">
+            <button class="popup-arrow" (click)="prev()">‹</button>
+            <button
+                    *ngFor="let p of promociones; let i = index"
+                    class="popup-dot"
+                    [class.active]="i === currentIndex"
+                    (click)="goTo(i)">
+            </button>
+            <button class="popup-arrow" (click)="next()">›</button>
+        </div>
+
+        <!-- Pie del popup -->
+        <div class="popup-footer">
+            Hecho a mano por artesanas del Ande · <strong>RS · Raymi Suprême</strong>
+        </div>
+
+    </div>
+</div>

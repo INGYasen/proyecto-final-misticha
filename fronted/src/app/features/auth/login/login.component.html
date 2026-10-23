@@ -1,0 +1,51 @@
+<div class="auth-page">
+  <div class="auth-split">
+
+    <!-- Panel visual izquierdo -->
+    <div class="auth-visual">
+      <img
+        src="assets/login-visual.jpg"
+        alt="Poncho andino Raymi Suprême"
+      />
+      <div class="auth-visual__overlay">
+        <div class="auth-visual__content">
+          <p class="auth-visual__eyebrow">Moda andina auténtica</p>
+          <h2>Lleva la elegancia<br><span>de lo auténtico</span></h2>
+          <p>Tejidos a mano por artesanas de Puno, Cusco y el Altiplano peruano.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="auth-form-wrap">
+      <div class="auth-form-inner">
+
+        <a routerLink="/" class="auth-logo" aria-label="Raymi Suprême">
+          <img src="assets/logo.png?v=marca" alt="Raymi Suprême">
+        </a>
+        <h1 class="auth-title">Iniciar sesión</h1>
+        <p class="auth-subtitle">Bienvenida/o de vuelta</p>
+
+        <p class="auth-subtitle">La contraseña se escribe en Keycloak, no en la tienda.</p>
+        <p class="field-error" *ngIf="error">{{ error }}</p>
+        <button type="button" class="btn-primary auth-submit" (click)="entrar()" [disabled]="loading">
+          <span *ngIf="!loading">Entrar</span>
+          <span *ngIf="loading">Redirigiendo...</span>
+        </button>
+
+        <div class="andean-divider"><span>✦</span></div>
+
+        <p class="auth-switch">
+          ¿Aún no tienes cuenta?
+          <a routerLink="/registro">Regístrate aquí</a>
+        </p>
+
+        <p class="auth-guest">
+          <a routerLink="/catalogo" (click)="seguirMirando()">Continuar sin registrarse →</a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+</div>

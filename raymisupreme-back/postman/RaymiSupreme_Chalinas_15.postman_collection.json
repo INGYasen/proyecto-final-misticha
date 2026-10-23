@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Raymi Suprême - Flujo completo 15 Chalinas",
+    "description": "Crea artesana, categoría, lote y 15 chalinas. Después asigna precio y publica cada prenda. Ejecutar con Collection Runner.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:7091" },
+    { "key": "token", "value": "" },
+    { "key": "idArtesano", "value": "" },
+    { "key": "idCategoria", "value": "" },
+    { "key": "idLote", "value": "" },
+    { "key": "idPrenda", "value": "" },
+    { "key": "productoIndex", "value": "0" },
+    {
+      "key": "productos",
+      "value": "[{\"codigoUnico\":\"CHAL-VAR-001\",\"nombrePrenda\":\"Chalina Alpaca Clásica\",\"publico\":\"VARON\",\"talla\":\"L\",\"color\":\"Azul\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":89.9,\"urlFoto\":\"/images/prendas/chalina-alpaca-clasica.jpg\",\"descripcion\":\"Chalina clásica de alpaca para varón, suave y abrigadora.\"},{\"codigoUnico\":\"CHAL-VAR-002\",\"nombrePrenda\":\"Chalina Salkantay\",\"publico\":\"VARON\",\"talla\":\"M\",\"color\":\"Gris\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":94.9,\"urlFoto\":\"/images/prendas/chalina-salkantay.jpg\",\"descripcion\":\"Chalina gris inspirada en los tonos del nevado Salkantay.\"},{\"codigoUnico\":\"CHAL-VAR-003\",\"nombrePrenda\":\"Chalina Cusco Geométrica\",\"publico\":\"VARON\",\"talla\":\"L\",\"color\":\"Marrón\",\"material\":\"Lana de alpaca\",\"stock\":1,\"precioBase\":99.9,\"urlFoto\":\"/images/prendas/chalina-cusco-geometrica.jpg\",\"descripcion\":\"Chalina con patrones geométricos inspirados en el arte cusqueño.\"},{\"codigoUnico\":\"CHAL-VAR-004\",\"nombrePrenda\":\"Chalina Ausangate\",\"publico\":\"VARON\",\"talla\":\"XL\",\"color\":\"Negro\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":109.9,\"urlFoto\":\"/images/prendas/chalina-ausangate.jpg\",\"descripcion\":\"Chalina negra de tejido grueso inspirada en el Ausangate.\"},{\"codigoUnico\":\"CHAL-VAR-005\",\"nombrePrenda\":\"Chalina Valle Sagrado\",\"publico\":\"VARON\",\"talla\":\"M\",\"color\":\"Beige\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":92.9,\"urlFoto\":\"/images/prendas/chalina-valle-sagrado.jpg\",\"descripcion\":\"Chalina beige de acabado natural inspirada en el Valle Sagrado.\"},{\"codigoUnico\":\"CHAL-MUJ-001\",\"nombrePrenda\":\"Chalina Killa\",\"publico\":\"MUJER\",\"talla\":\"M\",\"color\":\"Rojo\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":99.9,\"urlFoto\":\"/images/prendas/chalina-killa.jpg\",\"descripcion\":\"Chalina roja para mujer inspirada en la luna andina.\"},{\"codigoUnico\":\"CHAL-MUJ-002\",\"nombrePrenda\":\"Chalina Chaska\",\"publico\":\"MUJER\",\"talla\":\"S\",\"color\":\"Vino\",\"material\":\"Baby alpaca\",\"stock\":1,\"precioBase\":119.9,\"urlFoto\":\"/images/prendas/chalina-chaska.jpg\",\"descripcion\":\"Chalina color vino de baby alpaca, elegante y ligera.\"},{\"codigoUnico\":\"CHAL-MUJ-003\",\"nombrePrenda\":\"Chalina Flor Andina\",\"publico\":\"MUJER\",\"talla\":\"M\",\"color\":\"Rosa\",\"material\":\"Lana de alpaca\",\"stock\":1,\"precioBase\":104.9,\"urlFoto\":\"/images/prendas/chalina-flor-andina.jpg\",\"descripcion\":\"Chalina rosa con detalles inspirados en flores de los Andes.\"},{\"codigoUnico\":\"CHAL-MUJ-004\",\"nombrePrenda\":\"Chalina Qori\",\"publico\":\"MUJER\",\"talla\":\"L\",\"color\":\"Ocre\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":109.9,\"urlFoto\":\"/images/prendas/chalina-qori.jpg\",\"descripcion\":\"Chalina ocre de textura suave inspirada en el oro inca.\"},{\"codigoUnico\":\"CHAL-MUJ-005\",\"nombrePrenda\":\"Chalina Amanecer Cusqueño\",\"publico\":\"MUJER\",\"talla\":\"S\",\"color\":\"Terracota\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":102.9,\"urlFoto\":\"/images/prendas/chalina-amanecer-cusqueno.jpg\",\"descripcion\":\"Chalina terracota inspirada en los amaneceres del Cusco.\"},{\"codigoUnico\":\"CHAL-NIN-001\",\"nombrePrenda\":\"Chalina Inti Kids\",\"publico\":\"NINOS\",\"talla\":\"S\",\"color\":\"Amarillo\",\"material\":\"Lana suave\",\"stock\":1,\"precioBase\":54.9,\"urlFoto\":\"/images/prendas/chalina-inti-kids.jpg\",\"descripcion\":\"Chalina infantil amarilla, suave y cómoda para el invierno.\"},{\"codigoUnico\":\"CHAL-NIN-002\",\"nombrePrenda\":\"Chalina Arcoíris Andino Kids\",\"publico\":\"NINOS\",\"talla\":\"S\",\"color\":\"Multicolor\",\"material\":\"Lana suave\",\"stock\":1,\"precioBase\":59.9,\"urlFoto\":\"/images/prendas/chalina-arcoiris-kids.jpg\",\"descripcion\":\"Chalina infantil multicolor inspirada en los paisajes andinos.\"},{\"codigoUnico\":\"CHAL-UNI-001\",\"nombrePrenda\":\"Chalina Raymi Suprême Essential\",\"publico\":\"UNISEX\",\"talla\":\"M\",\"color\":\"Beige\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":89.9,\"urlFoto\":\"/images/prendas/chalina-raymisupreme-essential.jpg\",\"descripcion\":\"Chalina unisex minimalista de alpaca en tono beige.\"},{\"codigoUnico\":\"CHAL-UNI-002\",\"nombrePrenda\":\"Chalina Camino Inca\",\"publico\":\"UNISEX\",\"talla\":\"L\",\"color\":\"Verde\",\"material\":\"Lana de alpaca\",\"stock\":1,\"precioBase\":96.9,\"urlFoto\":\"/images/prendas/chalina-camino-inca.jpg\",\"descripcion\":\"Chalina unisex verde inspirada en los caminos del Tahuantinsuyo.\"},{\"codigoUnico\":\"CHAL-UNI-003\",\"nombrePrenda\":\"Chalina Noche Andina\",\"publico\":\"UNISEX\",\"talla\":\"M\",\"color\":\"Azul marino\",\"material\":\"Alpaca\",\"stock\":1,\"precioBase\":101.9,\"urlFoto\":\"/images/prendas/chalina-noche-andina.jpg\",\"descripcion\":\"Chalina unisex azul marino inspirada en la noche altiplánica.\"}]"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "1. Crear artesana",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombres\": \"María\",\n  \"apellidos\": \"Quispe Huamán\",\n  \"dni\": \"72345678\",\n  \"comunidadOZona\": \"Chinchero - Cusco\",\n  \"telefono\": \"987654321\"\n}" },
+        "url": "{{baseUrl}}/api/v1/artesanos"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Artesana creada', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));", "pm.collectionVariables.set('idArtesano', pm.response.json().idArtesano);"] } }]
+    },
+    {
+      "name": "2. Crear categoría Chalinas",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Chalinas\",\n  \"descripcion\": \"Chalinas artesanales elaboradas con fibras y técnicas textiles andinas\"\n}" },
+        "url": "{{baseUrl}}/api/v1/categorias"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Categoría creada', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));", "pm.collectionVariables.set('idCategoria', pm.response.json().idCategoria);"] } }]
+    },
+    {
+      "name": "3. Crear lote de 15 chalinas",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"idArtesano\": {{idArtesano}},\n  \"fechaCompra\": \"2026-07-01\",\n  \"precioTotalPagado\": 1125.00,\n  \"cantidadTotalRecibida\": 15,\n  \"descripcionGeneral\": \"Lote de 15 chalinas artesanales: 5 varón, 5 mujer, 2 niños y 3 unisex\",\n  \"estadoLote\": \"RECIBIDO\"\n}" },
+        "url": "{{baseUrl}}/api/v1/lotes"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Lote creado', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));", "pm.collectionVariables.set('idLote', pm.response.json().idLote);"] } }]
+    },
+    {
+      "name": "4. Crear prenda",
+      "event": [
+        { "listen": "prerequest", "script": { "exec": ["const productos = JSON.parse(pm.collectionVariables.get('productos'));", "const i = Number(pm.collectionVariables.get('productoIndex') || 0);", "const p = productos[i];", "Object.entries(p).forEach(([key, value]) => pm.collectionVariables.set(key, value));"] } },
+        { "listen": "test", "script": { "exec": ["pm.test('Prenda creada', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));", "pm.collectionVariables.set('idPrenda', pm.response.json().idPrenda);", "pm.execution.setNextRequest('5. Asignar precio');"] } }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"idLote\": {{idLote}},\n  \"idCategoria\": {{idCategoria}},\n  \"publico\": \"{{publico}}\",\n  \"codigoUnico\": \"{{codigoUnico}}\",\n  \"nombrePrenda\": \"{{nombrePrenda}}\",\n  \"talla\": \"{{talla}}\",\n  \"color\": \"{{color}}\",\n  \"material\": \"{{material}}\",\n  \"stock\": {{stock}}\n}" },
+        "url": "{{baseUrl}}/api/v1/prendas"
+      }
+    },
+    {
+      "name": "5. Asignar precio",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"prendaId\": {{idPrenda}},\n  \"precioBase\": {{precioBase}},\n  \"descuentoId\": null\n}" },
+        "url": "{{baseUrl}}/api/v1/precios/prendas"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Precio asignado', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));", "pm.execution.setNextRequest('6. Publicar en catálogo');"] } }]
+    },
+    {
+      "name": "6. Publicar en catálogo",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"idPrenda\": {{idPrenda}},\n  \"urlFoto\": \"{{urlFoto}}\",\n  \"descripcionPublica\": \"{{descripcion}}\",\n  \"destacado\": false,\n  \"activo\": true\n}" },
+        "url": "{{baseUrl}}/api/v1/catalogo/items"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Producto publicado', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));", "const productos = JSON.parse(pm.collectionVariables.get('productos'));", "const siguiente = Number(pm.collectionVariables.get('productoIndex') || 0) + 1;", "pm.collectionVariables.set('productoIndex', siguiente);", "if (siguiente < productos.length) { pm.execution.setNextRequest('4. Crear prenda'); } else { pm.collectionVariables.set('productoIndex', 0); pm.execution.setNextRequest(null); }"] } }]
+    }
+  ]
+}

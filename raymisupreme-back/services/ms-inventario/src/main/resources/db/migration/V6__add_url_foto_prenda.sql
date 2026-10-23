@@ -1,0 +1,2 @@
+ALTER TABLE prenda
+    ADD COLUMN url_foto VARCHAR(500) NULL;

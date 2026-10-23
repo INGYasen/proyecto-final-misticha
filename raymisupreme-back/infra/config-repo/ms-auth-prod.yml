@@ -1,0 +1,47 @@
+server:
+  port: 8189
+  forward-headers-strategy: framework
+
+# ── Keycloak Admin Client config ───────────────────────────────────────────
+keycloak:
+  server-url: ${KEYCLOAK_URL:http://keycloak:8080}
+  realm: raymisupreme-prod
+  client-id: ms-auth-admin
+  client-secret: ms-auth-admin-secret
+
+# ── JWT validation ─────────────────────────────────────────────────────────
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # ── issuer-uri: ${KEYCLOAK_URL:http://keycloak:8080}/realms/raymisupreme
+          issuer-uri: ${KEYCLOAK_URL:http://keycloak:8080}/realms/raymisupreme-prod
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://registry-server:7081/eureka
+    enabled: true
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,circuitbreakers,circuitbreakerevents
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+

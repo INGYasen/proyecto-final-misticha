@@ -1,0 +1,16 @@
+name: ms-carrito-dev
+
+services:
+  mysql-carrito:
+    image: mysql:8.0
+    container_name: mysql-carrito-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_carrito
+    ports:
+      - "3322:3306"
+    volumes:
+      - mysql_carrito_dev:/var/lib/mysql
+
+volumes:
+  mysql_carrito_dev:

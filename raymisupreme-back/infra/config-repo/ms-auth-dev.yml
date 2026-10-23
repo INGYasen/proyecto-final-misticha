@@ -1,0 +1,45 @@
+server:
+  port: 8089
+
+# ── Keycloak Admin Client config ───────────────────────────────────────────
+keycloak:
+  server-url: http://localhost:9091
+  realm: raymisupreme-dev
+  client-id: ms-auth-admin
+  client-secret: pXPyAxNZID0GIQPTe32SyIaktppVwJb1
+
+# ── JWT validation (para que ms-usuarios también valide el token entrante) ─
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # ── issuer-uri: http://localhost:9090/realms/raymisupreme
+          issuer-uri: http://localhost:9091/realms/raymisupreme-dev
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7081/eureka
+    enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.raymisupreme.msauth: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,circuitbreakers,circuitbreakerevents
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true

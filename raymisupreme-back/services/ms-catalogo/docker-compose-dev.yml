@@ -1,0 +1,16 @@
+name: ms-catalogo-dev
+
+services:
+  mysql-catalogo:
+    image: mysql:8.0
+    container_name: mysql-catalogo-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_catalogo
+    ports:
+      - "3319:3306"
+    volumes:
+      - mysql_catalogo_dev:/var/lib/mysql
+
+volumes:
+  mysql_catalogo_dev:

@@ -1,0 +1,326 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        # ===================== MS-ACOPIO =====================
+        - id: acopio-artesanos
+          uri: lb://ms-acopio
+          predicates:
+            - Path=/api/v1/artesanos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-acopio
+                fallbackUri: forward:/fallback/ms-acopio
+
+        - id: acopio-lotes
+          uri: lb://ms-acopio
+          predicates:
+            - Path=/api/v1/lotes/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-acopio
+                fallbackUri: forward:/fallback/ms-acopio
+
+        - id: acopio-instancia
+          uri: lb://ms-acopio
+          predicates:
+            - Path=/api/v1/acopio/instancia
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-acopio
+                fallbackUri: forward:/fallback/ms-acopio
+
+        - id: acopio-swagger
+          uri: lb://ms-acopio
+          predicates:
+            - Path=/ms-acopio/swagger-ui/**,/ms-acopio/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-acopio/(?<remaining>.*), /${remaining}
+
+        # ===================== MS-INVENTARIO =====================
+        - id: inventario-categorias
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/api/v1/categorias/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-inventario
+                fallbackUri: forward:/fallback/ms-inventario
+
+        - id: inventario-prendas
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/api/v1/prendas/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-inventario
+                fallbackUri: forward:/fallback/ms-inventario
+
+        - id: inventario-inspecciones
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/api/v1/inspecciones/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-inventario
+                fallbackUri: forward:/fallback/ms-inventario
+
+        - id: inventario-instancia
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/api/v1/inventario/instancia
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-inventario
+                fallbackUri: forward:/fallback/ms-inventario
+
+        - id: inventario-swagger
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/ms-inventario/swagger-ui/**,/ms-inventario/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-inventario/(?<remaining>.*), /${remaining}
+
+        # ===================== MS-VENTAS =====================
+        - id: ventas-clientes
+          uri: lb://ms-ventas
+          predicates:
+            - Path=/api/v1/clientes/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-ventas
+                fallbackUri: forward:/fallback/ms-ventas
+
+        - id: ventas-pedidos
+          uri: lb://ms-ventas
+          predicates:
+            - Path=/api/v1/pedidos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-ventas
+                fallbackUri: forward:/fallback/ms-ventas
+
+        - id: ventas-detalles
+          uri: lb://ms-ventas
+          predicates:
+            - Path=/api/v1/detalles,/api/v1/detalles/**,/api/v1/detalles-pedido/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-ventas
+                fallbackUri: forward:/fallback/ms-ventas
+
+        - id: ventas-instancia
+          uri: lb://ms-ventas
+          predicates:
+            - Path=/api/v1/ventas/instancia
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-ventas
+                fallbackUri: forward:/fallback/ms-ventas
+
+        - id: ventas-checkout
+          uri: lb://ms-ventas
+          predicates:
+            - Path=/api/v1/ventas/checkout/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-ventas
+                fallbackUri: forward:/fallback/ms-ventas
+
+        - id: ventas-swagger
+          uri: lb://ms-ventas
+          predicates:
+            - Path=/ms-ventas/swagger-ui/**,/ms-ventas/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-ventas/(?<remaining>.*), /${remaining}
+
+        # ===================== MS-AUTH =====================
+        - id: auth-crud
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-auth
+                fallbackUri: forward:/fallback/ms-auth
+
+        - id: auth-swagger
+          uri: lb://ms-auth
+          predicates:
+            - Path=/ms-auth/swagger-ui/**,/ms-auth/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-auth/(?<remaining>.*), /${remaining}
+
+
+        # ===================== MS-CATALOGO (publico) =====================
+        - id: catalogo-public-web
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/catalogo/public/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+
+        - id: catalogo-productos-publico
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/v1/catalogo/productos,/api/v1/catalogo/productos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+
+        - id: catalogo-items
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/v1/catalogo/items/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+
+        - id: catalogo-instancia
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/v1/catalogo/instancia
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+
+        - id: catalogo-swagger
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/ms-catalogo/swagger-ui/**,/ms-catalogo/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-catalogo/(?<remaining>.*), /${remaining}
+
+        # ===================== PRECIOS EN MS-CATALOGO =====================
+        - id: precios-base
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/v1/precios/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+
+        - id: precios-instancia
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/v1/precios/instancia
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+
+        # ===================== MS-PAGOS (uso interno / admin) =====================
+        - id: ms-pagos
+          uri: lb://ms-pagos
+          predicates:
+            - Path=/api/pagos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-pagos
+                fallbackUri: forward:/fallback/ms-pagos
+
+        - id: pagos-swagger
+          uri: lb://ms-pagos
+          predicates:
+            - Path=/ms-pagos/swagger-ui/**,/ms-pagos/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-pagos/(?<remaining>.*), /${remaining}
+
+        # ===================== MS-CARRITO =====================
+        - id: ms-carrito
+          uri: lb://ms-carrito
+          predicates:
+            - Path=/api/carrito/**,/api/v1/carrito/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-carrito
+                fallbackUri: forward:/fallback/ms-carrito
+
+        - id: carrito-swagger
+          uri: lb://ms-carrito
+          predicates:
+            - Path=/ms-carrito/swagger-ui/**,/ms-carrito/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-carrito/(?<remaining>.*), /${remaining}
+
+
+        # ===================== MS-PROMOCIONES (público, vive en ms-catalogo) =====================
+        - id: promociones-public
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/promociones/public/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+          # Sin autenticación: el frontend lo llama sin token
+
+        # ===================== MS-PROMOCIONES (admin) =====================
+        - id: promociones-admin
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/api/v1/promociones/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-catalogo
+                fallbackUri: forward:/fallback/ms-catalogo
+          # Requiere JWT con rol ADMIN / SUPER_ADMIN
+
+        - id: promociones-swagger
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/ms-promociones/swagger-ui/**,/ms-promociones/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-promociones/(?<remaining>.*), /${remaining}
+
+  # ─── OAuth2 Resource Server (Gateway valida JWT de Keycloak) ────────────────
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # ─── issuer-uri: ${KEYCLOAK_URL:http://keycloak:8080}/realms/raymisupreme
+          issuer-uri: ${KEYCLOAK_URL:http://keycloak:8080}/realms/raymisupreme-prod
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://registry-server-prod:7081/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,circuitbreakers,circuitbreakerevents
+  prometheus:
+    metrics:
+      export:
+        enabled: true

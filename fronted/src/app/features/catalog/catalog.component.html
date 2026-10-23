@@ -1,0 +1,155 @@
+<header class="catalog-heading">
+  <h1>{{ catalogTitle }}</h1>
+</header>
+
+<div class="container catalog-layout section-pad">
+
+  <!-- ============= SIDEBAR FILTROS ============= -->
+  <form [formGroup]="filterForm">
+    <aside class="catalog-filters" [class.open]="showFilters">
+      <div class="filter-header">
+        <h3>Filtros</h3>
+        <button type="button" class="filter-clear" *ngIf="filterForm.dirty" (click)="clearFilters()">
+          Limpiar todo
+        </button>
+      </div>
+
+      <!-- Búsqueda -->
+      <div class="filter-group">
+        <label class="form-label">Buscar</label>
+        <input type="text" class="form-control" placeholder="Nombre, material..." formControlName="busqueda">
+      </div>
+
+      <!-- Categorías -->
+      <div class="filter-group">
+        <label class="form-label">Categoria</label>
+        <div class="filter-options">
+          <label class="filter-radio">
+            <input type="radio" formControlName="publico" value="">
+            <span>Todos</span>
+          </label>
+          <label class="filter-radio" *ngFor="let item of [{label:'Mujer',value:'MUJER'},{label:'Varón',value:'VARON'},{label:'Niños',value:'NINOS'},{label:'Unisex',value:'UNISEX'}]">
+            <input type="radio" formControlName="publico" [value]="item.value">
+            <span>{{ item.label }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Categorías -->
+      <div class="filter-group">
+        <label class="form-label">sub Categoría</label>
+        <div class="filter-options">
+          <label class="filter-radio">
+            <input type="radio" formControlName="categoria" value="">
+            <span>Todas</span>
+          </label>
+          <label class="filter-radio" *ngFor="let cat of categorias">
+            <input type="radio" formControlName="categoria" [value]="cat.id">
+            <span>{{ cat.nombre }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Talla -->
+      <div class="filter-group">
+        <label class="form-label">Talla</label>
+        <div class="size-options">
+          <button
+            type="button"
+            *ngFor="let t of tallas"
+            class="size-btn"
+            [class.active]="filterForm.get('talla')?.value === t"
+            (click)="filterForm.patchValue({talla: filterForm.get('talla')?.value === t ? '' : t})"
+          >{{ t }}</button>
+        </div>
+      </div>
+
+      <!-- Color -->
+      <div class="filter-group">
+        <label class="form-label">Color</label>
+        <div class="filter-options">
+          <label class="filter-radio" *ngFor="let c of colores">
+            <input type="radio" formControlName="color" [value]="c">
+            <span>{{ c }}</span>
+          </label>
+        </div>
+      </div>
+    </aside>
+  </form>
+
+  <!-- ============= PRODUCTOS ============= -->
+  <div class="catalog-main">
+
+    <!-- Toolbar -->
+    <div class="catalog-toolbar">
+      <button class="filter-toggle-btn" (click)="showFilters = !showFilters">
+        ☰ Filtros
+      </button>
+      <span class="results-count">{{ filtered.length }} productos</span>
+      <select class="form-control sort-select" (change)="onSort($any($event.target).value)">
+        <option value="default">Ordenar por</option>
+        <option value="price-asc">Precio: menor a mayor</option>
+        <option value="price-desc">Precio: mayor a menor</option>
+      </select>
+    </div>
+
+    <app-spinner *ngIf="loading"></app-spinner>
+
+    <ng-container *ngIf="!loading">
+      <div class="products-grid" *ngIf="filtered.length > 0; else noResults">
+        <div class="product-card" *ngFor="let p of filtered">
+          <a [routerLink]="['/producto', p.id]">
+            <div class="product-card__img-wrap">
+              <img [src]="p.imagen || 'assets/placeholder.jpg'" [alt]="p.nombre" loading="lazy"/>
+              <div class="product-card__overlay">
+                <button type="button" class="product-card__action" title="Ver detalle">👁️</button>
+                <button
+                  type="button"
+                  class="product-card__action"
+                  title="Agregar al carrito"
+                  (click)="addToCart(p); $event.preventDefault()"
+                >🛒</button>
+              </div>
+              <span class="product-card__badge promo" *ngIf="enPromo(p)">Promo -{{ porcentajePromo(p) }}%</span>
+              <span class="product-card__badge" *ngIf="p.stockDisponible !== undefined && p.stockDisponible <= 3 && p.stockDisponible > 0">
+                ¡Últimas {{ p.stockDisponible }}!
+              </span>
+              <span class="product-card__badge out-of-stock" *ngIf="p.stockDisponible === 0">Agotado</span>
+              <span class="product-card__badge" *ngIf="p.stockDisponible == null">Sin inventario</span>
+              <button
+                type="button"
+                class="product-card__fav"
+                [class.is-saved]="favorites.isSaved(p.id)"
+                (click)="toggleFavorite(p); $event.preventDefault(); $event.stopPropagation()"
+                [attr.aria-label]="favorites.isSaved(p.id) ? 'Quitar de favoritos' : 'Guardar en favoritos'">
+                <svg viewBox="0 0 24 24" [attr.fill]="favorites.isSaved(p.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8">
+                  <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+                </svg>
+              </button>
+            </div>
+          </a>
+          <div class="product-card__body">
+            <div class="product-card__name">{{ p.nombre }}</div>
+            <div class="product-card__meta">{{ p.material }} · {{ p.color }} · Talla {{ p.talla }}</div>
+            <div class="product-card__price">
+              <span class="product-card__price-old" *ngIf="enPromo(p)">S/ {{ p.precioBase | number:'1.2-2' }}</span>
+              S/ {{ p.precio | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noResults>
+        <div class="no-results">
+          <div style="font-size:48px; margin-bottom:16px">{{ loadError ? '⚠️' : '🔍' }}</div>
+          <h3>{{ loadError ? 'No se pudo cargar el catálogo' : 'Sin resultados' }}</h3>
+          <p>{{ loadError ? 'El servicio de catálogo no respondió. Tus productos no se han perdido.' : 'Prueba con otros filtros o términos de búsqueda.' }}</p>
+          <button type="button" class="btn-outline" style="margin-top:20px" (click)="loadError ? loadProducts() : clearFilters()">
+            {{ loadError ? 'Reintentar' : 'Ver todos los productos' }}
+          </button>
+        </div>
+      </ng-template>
+    </ng-container>
+
+  </div>
+</div>

@@ -1,0 +1,27 @@
+server:
+  port: 7071
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          # En Docker usa la variable de entorno; en local apunta a tu carpeta config-repo
+          search-locations: ${CONFIG_REPO_LOCATION:file:../config-repo}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  file:
+    name: logs/config-server.log

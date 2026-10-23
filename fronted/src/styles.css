@@ -1,0 +1,7 @@
+/* =====================================================
+   RAYMI SUPRÊME — Entry stylesheet
+   ===================================================== */
+@import './assets/styles/global.css';
+
+/* Angular router link active overwrites */
+a.active { color: var(--color-oro) !important; }

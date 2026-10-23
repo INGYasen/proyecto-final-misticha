@@ -1,0 +1,60 @@
+<!-- Overlay -->
+<div class="sidebar-overlay" [class.visible]="isOpen" (click)="close()"></div>
+
+<!-- Sidebar -->
+<div class="cart-sidebar" [class.open]="isOpen">
+
+  <div class="cart-sidebar__header">
+    <h3>Tu Carrito <span>({{ items.length }})</span></h3>
+    <button class="modal-close" (click)="close()">✕</button>
+  </div>
+
+  <div class="cart-sidebar__body">
+    <ng-container *ngIf="items.length > 0; else emptyCart">
+      <div class="cart-item" *ngFor="let item of items">
+        <img
+          class="cart-item__img"
+          [src]="item.urlFoto || 'assets/placeholder.jpg'"
+          [alt]="item.nombrePrenda"
+        />
+        <div class="cart-item__info">
+          <div class="cart-item__name">{{ item.nombrePrenda }}</div>
+          <div class="cart-item__meta" *ngIf="item.talla || item.color">
+            {{ item.talla }} · {{ item.color }}
+          </div>
+          <div class="cart-item__price">S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</div>
+          <div class="qty-control">
+            <button (click)="updateQty(item.prendaId, -1)">−</button>
+            <span>{{ item.cantidad }}</span>
+            <button (click)="updateQty(item.prendaId, 1)">+</button>
+          </div>
+        </div>
+        <button class="cart-item__remove" (click)="remove(item.prendaId)" title="Eliminar">✕</button>
+      </div>
+    </ng-container>
+
+    <ng-template #emptyCart>
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <p>Tu carrito está vacío</p>
+        <a routerLink="/catalogo" (click)="close()" class="btn-outline" style="margin-top:16px">
+          Ver catálogo
+        </a>
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="cart-sidebar__footer" *ngIf="items.length > 0">
+    <div class="cart-total">
+      <span>Total</span>
+      <strong>S/ {{ total | number:'1.2-2' }}</strong>
+    </div>
+    <button class="btn-primary" style="width:100%; margin-top:16px" (click)="goCheckout()">
+      Ir al pago
+    </button>
+    <a routerLink="/carrito" (click)="close()" class="cart-view-full">
+      Ver carrito completo
+    </a>
+  </div>
+
+</div>

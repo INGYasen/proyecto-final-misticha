@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: ms-pagos
+  profiles:
+    active: dev
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:7071}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+mercadopago:
+  access-token: ${MP_ACCESS_TOKEN}
+  notification-url: ${MP_NOTIFICATION_URL}
+  webhook-secret: ${MP_WEBHOOK_SECRET:}
+
+internal:
+  payment-secret: ${INTERNAL_PAYMENT_SECRET:raymisupreme-local-payment-secret}
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY}
+  currency: pen
+  success-url: http://localhost:4200/checkout/success?session_id={CHECKOUT_SESSION_ID}
+  cancel-url: http://localhost:4200/checkout/cancel

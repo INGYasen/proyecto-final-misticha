@@ -1,0 +1,126 @@
+<div class="auth-page">
+  <div class="auth-split">
+
+    <!-- Panel visual -->
+    <div class="auth-visual">
+      <img
+        src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80"
+        alt="Artesanía andina"
+      />
+      <div class="auth-visual__overlay">
+        <div class="auth-visual__content">
+          <p class="auth-visual__eyebrow">Únete a la comunidad</p>
+          <h2>Apoya a las artesanas andinas</h2>
+          <p>Cada prenda que compras financia directamente a una familia artesana del Ande.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="auth-form-wrap">
+      <div class="auth-form-inner">
+
+        <a routerLink="/" class="auth-logo" aria-label="Raymi Suprême">
+          <img src="assets/logo.png?v=marca" alt="Raymi Suprême">
+        </a>
+        <h1 class="auth-title">Crear cuenta</h1>
+        <p class="auth-subtitle">Es rápido y gratuito</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Nombres *</label>
+              <input type="text" class="form-control" formControlName="firstName" placeholder="Juan">
+              <p class="field-error" *ngIf="hasError('firstName', 'required')">Requerido</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Apellidos *</label>
+              <input type="text" class="form-control" formControlName="lastName" placeholder="Pérez">
+              <p class="field-error" *ngIf="hasError('lastName', 'required')">Requerido</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Usuario *</label>
+            <input type="text" class="form-control" formControlName="username" placeholder="juanperez123" autocomplete="username">
+            <p class="field-error" *ngIf="hasError('username', 'required')">Requerido</p>
+            <p class="field-error" *ngIf="hasError('username', 'pattern')">Solo letras, números, punto, guión</p>
+            <p class="field-error" *ngIf="hasError('username', 'minlength')">Mínimo 3 caracteres</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Correo electrónico *</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="correo@email.com" autocomplete="email">
+            <p class="field-error" *ngIf="hasError('email', 'required')">Requerido</p>
+            <p class="field-error" *ngIf="hasError('email', 'email')">Email inválido</p>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">País *</label>
+              <input type="text" class="form-control" formControlName="pais" placeholder="Perú">
+              <p class="field-error" *ngIf="hasError('pais', 'required')">Requerido</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ciudad *</label>
+              <input type="text" class="form-control" formControlName="ciudad" placeholder="Cusco">
+              <p class="field-error" *ngIf="hasError('ciudad', 'required')">Requerido</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Dirección de envío *</label>
+            <input type="text" class="form-control" formControlName="direccionEnvio" placeholder="Av. Ejemplo 123, distrito">
+            <p class="field-error" *ngIf="hasError('direccionEnvio', 'required')">Requerido</p>
+            <p class="field-error" *ngIf="hasError('direccionEnvio', 'minlength')">Ingresa una dirección válida</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contraseña *</label>
+            <div class="password-wrap">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control"
+                formControlName="password"
+                placeholder="Mínimo 6 caracteres"
+                autocomplete="new-password"
+              >
+              <button type="button" class="password-toggle" (click)="showPassword = !showPassword">
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            <p class="field-error" *ngIf="hasError('password', 'minlength')">Mínimo 6 caracteres</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirmar contraseña *</label>
+            <input
+              type="password"
+              class="form-control"
+              formControlName="confirmPassword"
+              placeholder="Repite tu contraseña"
+              autocomplete="new-password"
+            >
+            <p class="field-error" *ngIf="passwordMismatch">Las contraseñas no coinciden</p>
+          </div>
+
+          <button type="submit" class="btn-primary auth-submit" [disabled]="loading">
+            <span *ngIf="!loading">Crear mi cuenta</span>
+            <span *ngIf="loading">Creando cuenta...</span>
+          </button>
+
+        </form>
+
+        <div class="andean-divider"><span>✦</span></div>
+
+        <p class="auth-switch">
+          ¿Ya tienes cuenta?
+          <a routerLink="/login">Iniciar sesión</a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+</div>

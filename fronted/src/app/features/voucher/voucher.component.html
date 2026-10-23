@@ -1,0 +1,245 @@
+<!-- ================================================================
+     VOUCHER — Vista dedicada del comprobante de compra
+     Ruta: /voucher/:id
+================================================================ -->
+
+<!-- Estado de carga o sin datos -->
+<div class="voucher-page-wrap" *ngIf="loading">
+    <div class="voucher-loading">
+        <div class="vl-spinner"></div>
+        <p>Cargando comprobante...</p>
+    </div>
+</div>
+
+<div class="voucher-page-wrap" *ngIf="!loading && !pedido">
+    <div class="voucher-no-data">
+        <span>🔍</span>
+        <h2>Comprobante no encontrado</h2>
+        <p>Redirigiendo al inicio...</p>
+        <button class="vbtn-primary" (click)="volverAlInicio()">Ir al inicio</button>
+    </div>
+</div>
+
+<!-- ===================== COMPROBANTE COMPLETO ===================== -->
+<div class="voucher-page" *ngIf="!loading && pedido">
+
+    <div class="receipt-checkout-header no-print">
+        <div class="receipt-header-inner">
+            <h1>Finalizar compra</h1>
+            <div class="receipt-stepper">
+                <div class="receipt-step done"><span>✓</span><small>Mis datos</small></div>
+                <div class="receipt-line done"></div>
+                <div class="receipt-step done"><span>✓</span><small>Pago</small></div>
+                <div class="receipt-line done"></div>
+                <div class="receipt-step active"><span>3</span><small>Boleta</small></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header de página -->
+    <div class="voucher-page-header">
+        <div class="container">
+            <div class="vph-content">
+                <div class="vph-brand">
+                    <span class="vph-icon">🏔️</span>
+                    <div>
+                        <div class="vph-name">RAYMI SUPRÊME</div>
+                        <div class="vph-sub">Comprobante de compra</div>
+                    </div>
+                </div>
+                <div class="vph-actions no-print">
+                    <button class="vbtn-outline" (click)="seguirComprando()">🛍️ Seguir comprando</button>
+                    <button class="vbtn-primary" (click)="downloadPdf()">⬇️ Descargar boleta PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container voucher-container">
+
+        <!-- Éxito animado -->
+        <div class="voucher-success-header no-print">
+            <div class="success-animation">
+                <div class="success-ring"></div>
+                <div class="success-check">✓</div>
+            </div>
+            <h1 class="voucher-success-title">¡Pago completado exitosamente!</h1>
+            <p class="voucher-success-sub">
+                Tu pedido está siendo preparado con amor artesanal
+            </p>
+        </div>
+
+        <!-- DOCUMENTO VOUCHER -->
+        <div class="voucher-document" id="voucher-print">
+
+            <!-- Cabecera del documento -->
+            <div class="vdoc-header">
+                <div class="vdoc-brand">
+                    <span class="vdoc-logo">🏔️</span>
+                    <div>
+                        <div class="vdoc-title">RAYMI SUPRÊME</div>
+                        <div class="vdoc-subtitle">Moda andina · Tejidos artesanales</div>
+                        <div class="vdoc-subtitle">raymisupreme.pe</div>
+                    </div>
+                </div>
+                <div class="vdoc-numbox">
+                    <div class="vdoc-numlabel">COMPROBANTE DE PAGO</div>
+                    <div class="vdoc-numval">{{ voucherNumero }}</div>
+                    <div class="vdoc-numdate">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</div>
+                    <div class="vdoc-status">✅ CONFIRMADO</div>
+                </div>
+            </div>
+
+            <div class="vdoc-divider"></div>
+
+            <!-- Datos del comprador y entrega -->
+            <div class="vdoc-info-grid">
+                <div class="vdoc-section">
+                    <div class="vdoc-section-title">DATOS DEL COMPRADOR</div>
+                    <div class="vdoc-row">
+                        <span>Nombre</span>
+                        <strong>{{ pedido.nombreCliente }}</strong>
+                    </div>
+                    <div class="vdoc-row">
+                        <span>Email</span>
+                        <strong>{{ pedido.email }}</strong>
+                    </div>
+                    <div class="vdoc-row">
+                        <span>Ciudad</span>
+                        <strong>{{ pedido.ciudad }}, {{ pedido.pais }}</strong>
+                    </div>
+                    <div class="vdoc-row">
+                        <span>Dirección</span>
+                        <strong>{{ pedido.direccion }}</strong>
+                    </div>
+                </div>
+
+                <div class="vdoc-section">
+                    <div class="vdoc-section-title">DETALLE DEL PAGO</div>
+                    <div class="vdoc-row">
+                        <span>N° Pedido</span>
+                        <strong>#{{ pedido.idPedido }}</strong>
+                    </div>
+                    <div class="vdoc-row">
+                        <span>Método</span>
+                        <strong>{{ getMetodoLabel(pedido.metodoPago) }}</strong>
+                    </div>
+                    <div class="vdoc-row">
+                        <span>Estado</span>
+                        <strong class="vdoc-confirmed">✅ CONFIRMADO</strong>
+                    </div>
+                    <div class="vdoc-row">
+                        <span>Fecha</span>
+                        <strong>{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vdoc-divider"></div>
+
+            <!-- Artículos -->
+            <div class="vdoc-section-title" style="margin: 0 28px 12px">ARTÍCULOS COMPRADOS</div>
+
+            <table class="vdoc-table">
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Talla / Color</th>
+                    <th class="text-center">Cant.</th>
+                    <th class="text-right">P. Unit.</th>
+                    <th class="text-right">Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of pedido.items">
+                    <td>
+                        <div class="vdoc-item-name">{{ item.nombrePrenda }}</div>
+                        <div class="vdoc-item-sku" *ngIf="item.codigoSku">{{ item.codigoSku }}</div>
+                    </td>
+                    <td>
+                        <span *ngIf="item.talla">{{ item.talla }}</span>
+                        <span *ngIf="item.talla && item.color"> · </span>
+                        <span *ngIf="item.color">{{ item.color }}</span>
+                        <span *ngIf="!item.talla && !item.color">—</span>
+                    </td>
+                    <td class="text-center">{{ item.cantidad }}</td>
+                    <td class="text-right">S/ {{ item.precio | number:'1.2-2' }}</td>
+                    <td class="text-right">
+                        <strong>S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</strong>
+                        <!-- Badge de descuento si aplica -->
+                        <div class="vdoc-discount-badge" *ngIf="item.descuento">
+                            -{{ item.descuento }}%
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr class="vdoc-total-row">
+                    <td colspan="3"></td>
+                    <td class="text-right vdoc-total-label">TOTAL</td>
+                    <td class="text-right vdoc-total-val">
+                        S/ {{ pedido.total | number:'1.2-2' }}
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+
+            <div class="vdoc-divider"></div>
+
+            <!-- Pie del voucher -->
+            <div class="vdoc-footer">
+                <p>
+                    Gracias por apoyar a las artesanas del Ande ·
+                    <strong>raymisupreme.pe</strong> ·
+                    pagos&#64;raymisupreme.pe
+                </p>
+                <p class="vdoc-footer-sub">
+                    Este documento sirve como comprobante de pago. Consérvalo para el
+                    seguimiento de tu pedido. RUC: 20123456789
+                </p>
+            </div>
+        </div>
+
+        <div class="voucher-final-actions no-print">
+            <button class="vbtn-ghost" (click)="printVoucher()">🖨️ Imprimir</button>
+            <button class="vbtn-primary" (click)="downloadPdf()">⬇️ Guardar PDF</button>
+        </div>
+
+        <!-- ¿Qué sigue? (solo pantalla) -->
+        <div class="what-next no-print">
+            <h3>¿Qué sigue con tu pedido?</h3>
+            <div class="wn-steps">
+                <div class="wn-step">
+                    <div class="wn-num">1</div>
+                    <div>
+                        <strong>Confirmación por correo</strong>
+                        <p>Recibirás los detalles en <strong>{{ pedido.email }}</strong></p>
+                    </div>
+                </div>
+                <div class="wn-step">
+                    <div class="wn-num">2</div>
+                    <div>
+                        <strong>Preparación artesanal</strong>
+                        <p>Nuestras artesanas prepararán tu prenda con el mayor cuidado.</p>
+                    </div>
+                </div>
+                <div class="wn-step">
+                    <div class="wn-num">3</div>
+                    <div>
+                        <strong>Envío en 3-7 días hábiles</strong>
+                        <p>Tu pedido llegará a <strong>{{ pedido.ciudad }}</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones finales -->
+            <div class="wn-actions">
+                <button class="vbtn-outline" (click)="verMisPedidos()">📦 Mis pedidos</button>
+                <button class="vbtn-primary" (click)="printVoucher()">🖨️ Imprimir</button>
+                <button class="vbtn-primary" (click)="downloadPdf()">⬇️ Descargar PDF</button>
+                <button class="vbtn-ghost" (click)="seguirComprando()">🛍️ Seguir comprando</button>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,116 @@
+site_name: Documentación Técnica - Raymi Suprême
+site_description: Documentación técnica, operativa y funcional del sistema e-commerce distribuido Raymi Suprême
+site_author: Equipo Raymi Suprême
+
+theme:
+  name: material
+  language: es
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Inicio: index.md
+
+  - Visión del Producto:
+      - Resumen Ejecutivo: producto/resumen-ejecutivo.md
+      - Problema de Negocio: producto/problema-negocio.md
+      - Propuesta de Solución: producto/propuesta-solucion.md
+      - Alcance del Sistema: producto/alcance.md
+      - Objetivos del Proyecto: producto/objetivos.md
+      - Actores del Sistema: producto/actores.md
+
+  - Arquitectura del Sistema:
+      - Arquitectura General: arquitectura/arquitectura-general.md
+      - Diagrama de Microservicios: arquitectura/diagrama-microservicios.md
+      - Flujo End-to-End de Compra: arquitectura/flujo-compra.md
+      - Comunicación entre Microservicios: arquitectura/comunicacion-microservicios.md
+      - Patrones Aplicados: arquitectura/patrones-aplicados.md
+      - Decisiones Técnicas: arquitectura/decisiones-tecnicas.md
+
+  - Microservicios:
+      - Descripción General: microservicios/descripcion-general.md
+      - API Gateway: microservicios/api-gateway.md
+      - Eureka Server: microservicios/eureka-server.md
+      - ms-auth: microservicios/ms-auth.md
+      - ms-acopio: microservicios/ms-acopio.md
+      - ms-inventario: microservicios/ms-inventario.md
+      - ms-catalogo: microservicios/ms-catalogo.md
+      - ms-carrito: microservicios/ms-carrito.md
+      - ms-ventas: microservicios/ms-ventas.md
+      - ms-pagos: microservicios/ms-pagos.md
+
+  - Base de Datos:
+      - Modelo de Datos General: base-datos/modelo-general.md
+      - Base de Datos por Microservicio: base-datos/base-datos-microservicio.md
+      - Tablas Principales: base-datos/tablas-principales.md
+      - Relaciones y Responsabilidades: base-datos/relaciones-responsabilidades.md
+      - Datos de Prueba: base-datos/datos-prueba.md
+
+  - Seguridad:
+      - Modelo de Seguridad: seguridad/modelo-seguridad.md
+      - Autenticación con Keycloak: seguridad/keycloak.md
+      - Autorización por Roles: seguridad/roles-permisos.md
+      - Uso de JWT: seguridad/jwt.md
+      - Protección de Endpoints: seguridad/proteccion-endpoints.md
+
+  - APIs y Endpoints:
+      - Convenciones de API: apis/convenciones.md
+      - Endpoints de Acopio: apis/ms-acopio.md
+      - Endpoints de Inventario: apis/ms-inventario.md
+      - Endpoints de Catálogo: apis/ms-catalogo.md
+      - Endpoints de Carrito: apis/ms-carrito.md
+      - Endpoints de Ventas: apis/ms-ventas.md
+      - Endpoints de Pagos: apis/ms-pagos.md
+      - Colección Postman: apis/postman.md
+
+  - Manual de Instalación:
+      - Requisitos Previos: instalacion/requisitos-previos.md
+      - Variables de Entorno: instalacion/variables-entorno.md
+      - Configuración Local: instalacion/configuracion-local.md
+      - Orden de Arranque: instalacion/orden-arranque.md
+      - Ejecución con Docker: instalacion/docker.md
+      - Verificación del Sistema: instalacion/verificacion.md
+
+  - Operación y Monitoreo:
+      - Observabilidad General: operacion/observabilidad.md
+      - Métricas con Prometheus: operacion/prometheus.md
+      - Dashboards en Grafana: operacion/grafana.md
+      - Health Checks: operacion/health-checks.md
+      - Logs del Sistema: operacion/logs.md
+      - Manejo de Errores: operacion/manejo-errores.md
+
+  - Pruebas y Validación:
+      - Estrategia de Pruebas: pruebas/estrategia-pruebas.md
+      - Pruebas Funcionales: pruebas/pruebas-funcionales.md
+      - Pruebas de Integración: pruebas/pruebas-integracion.md
+      - Prueba del Flujo de Compra: pruebas/flujo-compra.md
+      - Evidencias de Prueba: pruebas/evidencias.md
+      - Errores Frecuentes y Soluciones: pruebas/errores-frecuentes.md
+
+  - Manual de Usuario:
+      - Uso para Cliente: usuario/cliente.md
+      - Uso para Administrador: usuario/administrador.md
+      - Gestión de Productos: usuario/gestion-productos.md
+      - Gestión de Carrito y Compra: usuario/carrito-compra.md
+      - Gestión de Pagos: usuario/pagos.md
+
+  - Entrega del Proyecto:
+      - Repositorio del Proyecto: entrega/repositorio.md
+      - Estructura del Código Fuente: entrega/estructura-codigo.md
+      - Participación del Equipo: entrega/participacion-equipo.md
+      - Evidencias Finales: entrega/evidencias-finales.md
+      - Mejoras Futuras: entrega/mejoras-futuras.md
+      - Conclusiones: entrega/conclusiones.md

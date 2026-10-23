@@ -1,0 +1,267 @@
+/* ================================================================
+   VOUCHER — Comprobante de compra
+   ================================================================ */
+
+/* ── Page wrap ── */
+.voucher-page { background: #f4f1ea; min-height: 100vh; }
+.voucher-page-header, .what-next { display: none; }
+
+.receipt-checkout-header {
+    background: linear-gradient(105deg, #181827, #71340f);
+    color: white; padding: 28px 20px 18px;
+}
+.receipt-header-inner { max-width: 1160px; margin: 0 auto; }
+.receipt-header-inner h1 {
+    font-family: 'Playfair Display', serif; font-size: 24px; margin: 0 0 20px;
+}
+.receipt-stepper { display: flex; align-items: flex-start; width: 100%; }
+.receipt-step { width: 80px; text-align: center; flex-shrink: 0; }
+.receipt-step span {
+    width: 38px; height: 38px; margin: 0 auto 6px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(255,255,255,.35); font-weight: 700;
+}
+.receipt-step small { font-size: 11px; text-transform: uppercase; font-weight: 700; }
+.receipt-step.done span { background: #25a55f; border-color: #25a55f; }
+.receipt-step.active span { background: #c9922a; border-color: #e1b352; }
+.receipt-line { flex: 1; height: 2px; background: rgba(255,255,255,.25); margin-top: 18px; }
+.receipt-line.done { background: #c9922a; }
+.voucher-final-actions {
+    display: flex; justify-content: center; gap: 14px; margin: 24px 0 40px;
+}
+.voucher-final-actions button { min-width: 170px; }
+.voucher-page-wrap { min-height: 60vh; display: flex; align-items: center; justify-content: center; }
+.container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+.voucher-container { padding-top: 28px; padding-bottom: 60px; }
+
+/* ── Loading ── */
+.voucher-loading { text-align: center; padding: 60px; }
+.vl-spinner {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 4px solid #f1ece0;
+    border-top-color: #C9922A;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── No data ── */
+.voucher-no-data {
+    text-align: center; padding: 60px;
+    background: white; border-radius: 20px; max-width: 420px;
+}
+.voucher-no-data span { font-size: 48px; display: block; margin-bottom: 16px; }
+.voucher-no-data h2 { font-size: 20px; margin-bottom: 8px; }
+.voucher-no-data p { color: #64748b; margin-bottom: 20px; }
+
+/* ── Page header ── */
+.voucher-page-header {
+    background: #1A1A2E;
+    padding: 16px 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.vph-content {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+}
+.vph-brand { display: flex; align-items: center; gap: 12px; color: white; }
+.vph-icon { font-size: 28px; }
+.vph-name {
+    font-family: 'Playfair Display', serif; font-size: 16px;
+    font-weight: 800; color: #C9922A; letter-spacing: 2px;
+}
+.vph-sub { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+.vph-actions { display: flex; gap: 10px; }
+
+/* ── Botones generales ── */
+.vbtn-primary {
+    padding: 10px 22px;
+    background: linear-gradient(135deg, #C9922A, #8B4513);
+    color: white; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s;
+}
+.vbtn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.vbtn-outline {
+    padding: 10px 22px;
+    background: transparent; color: white;
+    border: 1.5px solid rgba(255,255,255,0.3); border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s;
+}
+.vbtn-outline:hover { border-color: #C9922A; color: #C9922A; }
+
+.vbtn-ghost {
+    padding: 10px 22px; background: white;
+    color: #1A1A2E; border: 1.5px solid #1A1A2E; border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s;
+}
+.vbtn-ghost:hover { background: #1A1A2E; color: white; }
+
+/* ── Success animation ── */
+.voucher-success-header {
+    text-align: center; margin-bottom: 28px; padding-top: 20px;
+}
+.success-animation {
+    position: relative; width: 76px; height: 76px;
+    margin: 0 auto 20px;
+}
+.success-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 4px solid #C9922A;
+    animation: ringPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes ringPop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.success-check {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: #27ae60;
+    animation: checkIn 0.4s ease 0.3s both;
+}
+@keyframes checkIn {
+    from { transform: scale(0) rotate(-45deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0);      opacity: 1; }
+}
+.voucher-success-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; color: #1A1A2E; margin-bottom: 8px;
+}
+.voucher-success-sub { font-size: 15px; color: #64748b; }
+
+/* ── Voucher document ── */
+.voucher-document {
+    background: white; border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    overflow: hidden; margin-bottom: 28px;
+}
+
+.vdoc-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 28px;
+    background: #1A1A2E; color: white;
+}
+.vdoc-brand { display: flex; align-items: center; gap: 14px; }
+.vdoc-logo { font-size: 36px; }
+.vdoc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 800;
+    color: #C9922A; letter-spacing: 2px;
+}
+.vdoc-subtitle { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+
+.vdoc-numbox { text-align: right; }
+.vdoc-numlabel {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 1.5px; color: rgba(255,255,255,0.5);
+}
+.vdoc-numval {
+    font-size: 20px; font-weight: 800; color: #C9922A;
+    font-family: 'Courier New', monospace; letter-spacing: 1px;
+}
+.vdoc-numdate { font-size: 12px; color: rgba(255,255,255,0.55); }
+.vdoc-status {
+    font-size: 11px; font-weight: 700; color: #27ae60;
+    margin-top: 4px;
+}
+
+.vdoc-divider { height: 1px; background: #e8e4dc; margin: 0 28px; }
+
+.vdoc-info-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; padding: 24px 28px;
+}
+@media (max-width: 600px) { .vdoc-info-grid { grid-template-columns: 1fr; } }
+
+.vdoc-section-title {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: #94a3b8; margin-bottom: 12px;
+}
+.vdoc-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px; padding: 7px 0;
+    border-bottom: 1px dashed #e8e4dc; font-size: 13px;
+}
+.vdoc-row:last-child { border-bottom: none; }
+.vdoc-row span { color: #94a3b8; flex-shrink: 0; }
+.vdoc-row strong { color: #1A1A2E; text-align: right; }
+.vdoc-confirmed { color: #27ae60; }
+
+/* ── Tabla ── */
+.vdoc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vdoc-table thead tr { background: #faf8f5; }
+.vdoc-table th {
+    padding: 10px 16px; text-align: left;
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.8px; color: #94a3b8; font-weight: 600;
+}
+.vdoc-table td {
+    padding: 12px 16px; color: #1A1A2E;
+    border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+}
+.text-center { text-align: center !important; }
+.text-right  { text-align: right  !important; }
+
+.vdoc-item-name { font-weight: 600; }
+.vdoc-item-sku { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+.vdoc-discount-badge {
+    font-size: 10px; font-weight: 700; color: white;
+    background: linear-gradient(135deg, #C9922A, #8B4513);
+    padding: 1px 6px; border-radius: 6px;
+    display: inline-block; margin-top: 3px;
+}
+
+.vdoc-total-row td { background: #faf8f5; border-bottom: none; }
+.vdoc-total-label {
+    font-size: 13px; font-weight: 700; color: #64748b;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.vdoc-total-val {
+    font-size: 22px; font-weight: 900; color: #C9922A;
+    font-family: 'Poppins', sans-serif;
+}
+
+.vdoc-footer {
+    padding: 16px 28px; background: #faf8f5;
+    text-align: center;
+}
+.vdoc-footer p { font-size: 12px; color: #94a3b8; }
+.vdoc-footer-sub { font-size: 11px; margin-top: 4px; }
+
+/* ── What's next ── */
+.what-next {
+    background: white; border-radius: 16px;
+    padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 40px;
+}
+.what-next h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: #1A1A2E; margin-bottom: 20px;
+}
+.wn-steps { display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+.wn-step { display: flex; gap: 16px; align-items: flex-start; }
+.wn-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #C9922A, #8B4513);
+    color: white; font-weight: 800; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.wn-step strong { display: block; font-size: 14px; color: #1A1A2E; margin-bottom: 3px; }
+.wn-step p { font-size: 13px; color: #64748b; }
+
+.wn-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* ── PRINT ── */
+@media print {
+    .no-print, .voucher-page-header, .what-next,
+    .voucher-success-header { display: none !important; }
+    .voucher-page { background: white; }
+    .voucher-document { box-shadow: none; border: 1px solid #ccc; }
+    .vdoc-header { background: #1A1A2E !important; -webkit-print-color-adjust: exact; }
+}

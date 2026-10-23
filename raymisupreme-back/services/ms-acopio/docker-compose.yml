@@ -1,0 +1,53 @@
+name: ms-acopio-prod
+
+services:
+  mysql-acopio:
+    image: mysql:8.0
+    container_name: mysql-acopio
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ACOPIO_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${ACOPIO_MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${ACOPIO_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_acopio_data:/var/lib/mysql
+    networks:
+      - acopio-int
+
+  ms-acopio:
+    build: .
+    container_name: ms-acopio
+    restart: unless-stopped
+    depends_on:
+      mysql-acopio:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      ACOPIO_DB_HOST: mysql-acopio
+      ACOPIO_DB_PORT: 3306
+      ACOPIO_DB_NAME: ${ACOPIO_MYSQL_DATABASE}
+      ACOPIO_DB_USERNAME: root
+      ACOPIO_DB_PASSWORD: ${ACOPIO_MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8186:8186"
+    networks:
+      - acopio-int
+      - ms-net
+
+volumes:
+  mysql_acopio_data:
+
+networks:
+  ms-net:
+    external: true
+    name: ms-net
+  acopio-int:
+    name: acopio-int

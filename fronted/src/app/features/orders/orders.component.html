@@ -1,0 +1,125 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Mis Pedidos</h1>
+    <nav class="breadcrumb">
+      <a routerLink="/">Inicio</a><span>/</span><span>Mis Pedidos</span>
+    </nav>
+  </div>
+</div>
+
+<div class="container section-pad">
+  <app-spinner *ngIf="loading"></app-spinner>
+
+  <ng-container *ngIf="!loading">
+
+    <div class="no-orders" *ngIf="loadError">
+      <h2>No se pudieron cargar tus pedidos</h2>
+      <p>El servicio de ventas no respondió. Tus compras siguen registradas.</p>
+      <button type="button" class="btn-outline" style="margin-top:20px" (click)="cargar()">Reintentar</button>
+    </div>
+
+    <ng-container *ngIf="!loadError && pedidos.length > 0; else noPedidos">
+      <div class="orders-list">
+        <div class="order-card" *ngFor="let pedido of pedidos">
+
+          <!-- Header del pedido -->
+          <div class="order-card__header" (click)="toggleExpand(pedido.idPedido!)">
+            <div class="order-card__main">
+              <div class="order-id">Pedido <strong>#{{ pedido.idPedido }}</strong></div>
+              <div class="order-date">{{ pedido.fechaPedido | date:'dd MMMM yyyy' }}</div>
+            </div>
+
+            <div class="order-card__meta">
+              <span
+                class="order-status"
+                [style.background]="tono(pedido) + '20'"
+                [style.color]="tono(pedido)"
+                [style.borderColor]="tono(pedido)"
+              >
+                {{ getEstado(pedido.estadoPedido).icon }}
+                {{ pedido.etiqueta || getEstado(pedido.estadoPedido).label }}
+              </span>
+              <div class="order-total">S/ {{ pedido.totalPagar | number:'1.2-2' }}</div>
+              <div class="order-toggle">{{ expandedId === pedido.idPedido ? '▲' : '▼' }}</div>
+            </div>
+          </div>
+
+          <!-- Progreso visual -->
+          <div class="order-progress" *ngIf="pedido.etiqueta !== 'Pago rechazado'" [class.expanded]="expandedId === pedido.idPedido">
+            <div class="progress-track">
+              <div
+                class="progress-step"
+                *ngFor="let s of ['PENDIENTE','CONFIRMADO','ENVIADO','ENTREGADO']"
+                [class.done]="isStepDone(pedido.estadoPedido, s)"
+                [class.current]="isStepCurrent(pedido.estadoPedido, s)"
+              >
+                <div class="ps-dot"></div>
+                <div class="ps-label">{{ getEstado(s).label }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detalles expandibles -->
+          <div class="order-details" [class.open]="expandedId === pedido.idPedido">
+            <div class="order-details__inner">
+              <div class="order-info-row">
+                <span>Estado actual</span>
+                <strong [style.color]="tono(pedido)">
+                  {{ getEstado(pedido.estadoPedido).icon }} {{ pedido.etiqueta || getEstado(pedido.estadoPedido).label }}
+                </strong>
+              </div>
+              <div class="order-info-row" *ngIf="pedido.metodo">
+                <span>Medio de pago</span>
+                <strong>{{ pedido.metodo }}</strong>
+              </div>
+              <div class="order-info-row" *ngIf="pedido.detallePago">
+                <span>Detalle</span>
+                <strong>{{ pedido.detallePago }}</strong>
+              </div>
+              <div class="order-info-row">
+                <span>{{ pedido.estadoPedido === 'PAGADO' ? 'Total pagado' : 'Total del pedido' }}</span>
+                <strong>S/ {{ pedido.totalPagar | number:'1.2-2' }}</strong>
+              </div>
+              <div class="order-details__actions" *ngIf="expandedId === pedido.idPedido">
+                <button type="button" class="btn-outline order-detail-btn" (click)="verDetalle(pedido)">
+                  {{ detalleId === pedido.idPedido ? 'Ocultar detalle' : 'Ver detalle completo' }}
+                </button>
+                <button type="button" class="btn-outline order-cancel-btn" *ngIf="pendiente(pedido)" (click)="cancelar(pedido)">
+                  Cancelar compra
+                </button>
+              </div>
+
+              <div class="order-lines" *ngIf="detalleId === pedido.idPedido">
+                <p class="order-lines__status" *ngIf="detalleLoading">Cargando las prendas del pedido…</p>
+                <p class="order-lines__status" *ngIf="!detalleLoading && !lineas.length">Este pedido no tiene prendas registradas.</p>
+                <article class="order-line" *ngFor="let linea of lineas">
+                  <img [src]="linea.imagen || 'assets/placeholder.jpg'" [alt]="linea.nombre">
+                  <div>
+                    <strong>{{ linea.nombre }}</strong>
+                    <span>{{ linea.cantidad }} × S/ {{ linea.precioUnitario | number:'1.2-2' }}</span>
+                  </div>
+                  <em>S/ {{ linea.subtotal | number:'1.2-2' }}</em>
+                </article>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noPedidos>
+    <ng-container *ngIf="!loadError">
+      <div class="no-orders">
+        <div style="font-size:64px; margin-bottom:20px">📦</div>
+        <h2>Aún no tienes pedidos</h2>
+        <p>Explora nuestro catálogo y realiza tu primera compra.</p>
+        <a routerLink="/catalogo" class="btn-primary" style="margin-top:24px">
+          Ver catálogo
+        </a>
+      </div>
+    </ng-container>
+    </ng-template>
+
+  </ng-container>
+</div>

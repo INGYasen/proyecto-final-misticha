@@ -1,0 +1,21 @@
+name: ms-auth-prod
+
+services:
+  ms-auth:
+    build: .
+    container_name: ms-auth
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      KEYCLOAK_URL: ${KEYCLOAK_URL:-http://keycloak:8080}
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+    ports:
+      - "8189:8189"
+    networks:
+      - ms-net
+
+networks:
+  ms-net:
+    external: true
+    name: ms-net

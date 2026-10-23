@@ -1,0 +1,182 @@
+.orders-list { display: flex; flex-direction: column; gap: 16px; max-width: 860px; margin: 0 auto; }
+
+.order-card {
+  background: white;
+  border: 1px solid var(--color-gray-4);
+  overflow: hidden;
+}
+
+.order-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: var(--trans);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.order-card__header:hover { background: var(--color-bg); }
+
+.order-id { font-size: 14px; color: var(--color-gray-1); }
+.order-id strong { font-size: 16px; color: var(--color-noche); }
+.order-date { font-size: 13px; color: var(--color-gray-2); margin-top: 3px; }
+
+.order-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.order-status {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  border-radius: 20px;
+}
+
+.order-total { font-size: 16px; font-weight: 700; color: var(--color-noche); }
+
+.order-toggle { color: var(--color-gray-2); font-size: 12px; }
+
+/* ---- Progress track ---- */
+.order-progress {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.order-progress.expanded { max-height: 100px; }
+
+.progress-track {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 32px 16px;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-gray-4);
+  position: relative;
+}
+
+.progress-track::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 60px;
+  right: 60px;
+  height: 2px;
+  background: var(--color-gray-4);
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.ps-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--color-gray-4);
+  background: white;
+  transition: var(--trans);
+}
+
+.progress-step.done .ps-dot {
+  background: #27ae60;
+  border-color: #27ae60;
+}
+
+.progress-step.current .ps-dot {
+  background: var(--color-oro);
+  border-color: var(--color-oro);
+  box-shadow: 0 0 0 4px rgba(201,146,42,0.2);
+}
+
+.ps-label {
+  font-size: 11px;
+  color: var(--color-gray-2);
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.progress-step.done .ps-label,
+.progress-step.current .ps-label { color: var(--color-noche); }
+
+/* ---- Expandable details ---- */
+.order-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.order-details.open { max-height: 1600px; }
+
+.order-detail-btn { font-size: 12px; padding: 8px 16px; }
+.order-cancel-btn { font-size: 12px; padding: 8px 16px; margin-left: 8px; color: #9a3b3b; border-color: #9a3b3b; }
+
+.order-lines { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.order-lines__status { margin: 0; color: var(--color-gray-2); font-size: 14px; }
+.order-line {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--color-gray-4);
+}
+.order-line img {
+  width: 64px;
+  height: 76px;
+  object-fit: cover;
+  background: #e2d8cc;
+}
+.order-line strong { display: block; color: var(--color-noche); font-size: 14px; }
+.order-line span { color: var(--color-gray-2); font-size: 13px; }
+.order-line em { color: var(--color-oro); font-style: normal; font-weight: 700; }
+
+.order-details__inner {
+  padding: 20px 24px;
+  border-top: 1px solid var(--color-gray-4);
+}
+
+.order-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-gray-4);
+}
+.order-info-row:last-of-type { border-bottom: none; }
+.order-info-row span:first-child { color: var(--color-gray-2); }
+
+.order-details__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---- Empty ---- */
+.no-orders {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--color-gray-2);
+  max-width: 400px;
+  margin: 0 auto;
+}
+.no-orders h2 { color: var(--color-noche); margin-bottom: 12px; }
+.no-orders p { font-size: 15px; }
+
+@media (max-width: 600px) {
+  .order-card__header { flex-direction: column; align-items: flex-start; }
+  .progress-track { padding: 16px 20px; }
+  .ps-label { display: none; }
+}

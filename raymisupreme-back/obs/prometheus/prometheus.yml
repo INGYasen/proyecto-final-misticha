@@ -1,0 +1,69 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: config-server-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - config-server:7071
+
+  - job_name: registry-server-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - registry-server:7081
+
+  - job_name: gateway-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - gateway:7091
+
+  - job_name: ms-acopio-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-acopio:8186
+
+  - job_name: ms-inventario-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-inventario:8187
+
+  - job_name: ms-ventas-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-ventas:8188
+
+  - job_name: ms-auth-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-auth:8189
+
+  - job_name: ms-catalogo-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-catalogo:8190
+
+  - job_name: ms-pagos-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-pagos:8192
+
+  - job_name: ms-carrito-prod
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - ms-carrito:8193

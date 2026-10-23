@@ -1,0 +1,661 @@
+<!-- ================================================================
+     CHECKOUT — RAYMI SUPRÊME
+     Steps: 1=Datos | 2=Pago seguro con Stripe | 3=Boleta
+================================================================ -->
+
+<!-- STEPS 1-2: Header con stepper -->
+<div class="checkout-page-header" *ngIf="step <= 2">
+  <div class="checkout-hero-bg"></div>
+  <div class="container">
+    <div class="checkout-header-content">
+      <h1 class="checkout-page-title">Finalizar compra</h1>
+
+      <!-- STEPPER -->
+      <div class="checkout-stepper">
+        <div class="cstep" [class.active]="step >= 1" [class.done]="step > 1">
+          <div class="cstep__circle">
+            <span *ngIf="step <= 1">1</span>
+            <svg *ngIf="step > 1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="14" height="14">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <span class="cstep__label">Mis datos</span>
+        </div>
+        <div class="cstep-line" [class.done]="step > 1"></div>
+
+        <div class="cstep" [class.active]="step >= 2" [class.done]="step > 2">
+          <div class="cstep__circle">
+            <span *ngIf="step <= 2">2</span>
+            <svg *ngIf="step > 2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="14" height="14">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <span class="cstep__label">Pago</span>
+        </div>
+        <div class="cstep-line"></div>
+
+        <div class="cstep">
+          <div class="cstep__circle"><span>3</span></div>
+          <span class="cstep__label">Boleta</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STEPS 1-2: Layout principal
+============================================================ -->
+<div class="container checkout-grid" *ngIf="step <= 2">
+
+  <!-- ===== LADO IZQUIERDO: FORMS ===== -->
+  <div class="checkout-main">
+
+    <!-- ====== STEP 1: DATOS DEL CLIENTE ====== -->
+    <div class="co-card animate-in" *ngIf="step === 1">
+      <div class="co-card__header">
+        <div class="co-card__icon">📍</div>
+        <h2>Datos de entrega</h2>
+      </div>
+
+      <form [formGroup]="clienteForm" (ngSubmit)="submitCliente()">
+        <div class="form-row-2">
+          <div class="co-form-group">
+            <label class="co-label">Nombre completo <span class="req">*</span></label>
+            <input type="text" class="co-input" formControlName="nombres"
+              placeholder="María García" [class.error]="hasError(clienteForm,'nombres','required')">
+            <span class="co-field-err" *ngIf="hasError(clienteForm,'nombres','required')">
+              ⚠ Nombre requerido
+            </span>
+          </div>
+          <div class="co-form-group">
+            <label class="co-label">Correo electrónico <span class="req">*</span></label>
+            <input type="email" class="co-input" formControlName="email"
+              placeholder="correo@ejemplo.com" [class.error]="hasError(clienteForm,'email','email')">
+            <span class="co-field-err" *ngIf="hasError(clienteForm,'email','email')">
+              ⚠ Email inválido
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="co-form-group">
+            <label class="co-label">País <span class="req">*</span></label>
+            <div class="co-select-wrap">
+              <select class="co-input" formControlName="pais">
+                <option value="Perú">🇵🇪 Perú</option>
+                <option value="Colombia">🇨🇴 Colombia</option>
+                <option value="Chile">🇨🇱 Chile</option>
+                <option value="Argentina">🇦🇷 Argentina</option>
+                <option value="México">🇲🇽 México</option>
+                <option value="España">🇪🇸 España</option>
+              </select>
+            </div>
+          </div>
+          <div class="co-form-group">
+            <label class="co-label">Ciudad <span class="req">*</span></label>
+            <input type="text" class="co-input" formControlName="ciudad"
+              placeholder="Lima, Cusco, Arequipa...">
+            <span class="co-field-err" *ngIf="hasError(clienteForm,'ciudad','required')">
+              ⚠ Ciudad requerida
+            </span>
+          </div>
+        </div>
+
+        <div class="co-form-group">
+          <label class="co-label">Dirección de envío <span class="req">*</span></label>
+          <input type="text" class="co-input" formControlName="direccionEnvio"
+            placeholder="Av. Arequipa 1234, Miraflores, Lima">
+          <span class="co-field-err" *ngIf="hasError(clienteForm,'direccionEnvio','required')">
+            ⚠ Dirección requerida
+          </span>
+          <span class="co-hint">Incluye calle, número y distrito para un envío preciso</span>
+        </div>
+
+        <div class="co-card__actions">
+          <a routerLink="/carrito" class="co-btn-outline">← Volver al carrito</a>
+          <button type="submit" class="co-btn-primary" [disabled]="loading">
+            Continuar al pago →
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ====== STEP 2: MÉTODO DE PAGO ====== -->
+    <div class="co-card animate-in" *ngIf="step === 2">
+      <div class="co-card__header">
+        <div class="co-card__icon">💳</div>
+        <h2>Elige cómo pagar</h2>
+      </div>
+
+      <form [formGroup]="pagoForm">
+        <!-- Opciones de pago -->
+        <div class="payment-options">
+          <label class="pm-option" *ngFor="let m of metodos"
+            [class.selected]="metodoPago === m.value">
+            <input type="radio" formControlName="metodoPago" [value]="m.value">
+            <div class="pm-option__icon">{{ m.icon }}</div>
+            <div class="pm-option__info">
+              <strong>{{ m.label }}</strong>
+              <small>{{ m.desc }}</small>
+            </div>
+            <div class="pm-option__check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="14" height="14">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </label>
+        </div>
+      </form>
+
+      <form class="yape-panel" [formGroup]="yapeForm" (ngSubmit)="pagarConYape()">
+        <div class="yape-panel__head">
+          <strong>Yape</strong>
+          <span>S/ {{ total | number:'1.2-2' }}</span>
+        </div>
+        <p>Abre Yape, genera el código de aprobación y escríbelo aquí. Se cobra el total del pedido.</p>
+        <div class="yape-fields">
+          <label>
+            Celular
+            <input formControlName="celular" inputmode="numeric" maxlength="9" autocomplete="tel"
+              placeholder="987654321" (input)="soloDigitos($event, 'celular', 9)">
+          </label>
+          <label>
+            Código de Yape
+            <input formControlName="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code"
+              placeholder="6 dígitos" (input)="soloDigitos($event, 'otp', 6)">
+          </label>
+        </div>
+        <button type="submit" class="co-btn-primary" [disabled]="yapeLoading">
+          {{ yapeLoading ? 'Procesando Yape…' : 'Pagar con Yape' }}
+        </button>
+      </form>
+
+      <div class="mp-brick-wrapper">
+        <div class="mp-brick-loading" *ngIf="!brickReady && !brickError">
+          Cargando medios de pago seguros…
+        </div>
+        <div class="mp-brick-error" *ngIf="brickError">
+          No se pudo cargar Mercado Pago. Vuelve atrás e inténtalo nuevamente.
+        </div>
+        <div id="paymentBrick_container"></div>
+      </div>
+
+      <!-- ── YAPE / PLIN: QR ── -->
+      <div class="pm-detail-panel animate-in" *ngIf="false">
+        <div class="pm-qr-section">
+          <div class="qr-container">
+            <img [src]="qrImageUrl" alt="Código QR Yape" class="qr-image">
+            <div class="qr-badge">
+              <span>📲</span> YAPE / PLIN
+            </div>
+          </div>
+          <div class="qr-instructions">
+            <h4>¿Cómo pagar con Yape o Plin?</h4>
+            <ol class="qr-steps">
+              <li>Abre tu app <strong>Yape</strong> o <strong>Plin</strong></li>
+              <li>Toca <strong>"Cobros y pagos"</strong> → <strong>"QR"</strong></li>
+              <li>Escanea el código QR de la pantalla</li>
+              <li>Ingresa el monto: <strong class="qr-amount">S/ {{ total | number:'1.2-2' }}</strong></li>
+              <li>Añade en el concepto: <strong>#RS</strong></li>
+              <li>Confirma el pago</li>
+            </ol>
+            <div class="qr-phone-number">
+              📱 Número Yape: <strong>922 456 789</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TARJETA: Formulario ── -->
+      <div class="pm-detail-panel animate-in" *ngIf="false">
+        <div class="card-form-section">
+
+          <!-- Tarjeta visual (flip card) -->
+          <div class="card-visual">
+            <div class="card-visual__front">
+              <div class="card-chip">
+                <div class="chip-lines">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+              <div class="card-number">
+                {{ cardForm.get('numero')?.value || '•••• •••• •••• ••••' }}
+              </div>
+              <div class="card-bottom">
+                <div>
+                  <div class="card-label">Titular</div>
+                  <div class="card-value">{{ cardForm.get('titular')?.value || 'TU NOMBRE' | uppercase }}</div>
+                </div>
+                <div>
+                  <div class="card-label">Vence</div>
+                  <div class="card-value">{{ cardForm.get('expiry')?.value || 'MM/AA' }}</div>
+                </div>
+                <div class="card-brand">
+                  <span *ngIf="getCardBrand() === 'VISA'" class="brand-visa">VISA</span>
+                  <span *ngIf="getCardBrand() === 'MASTERCARD'" class="brand-mc">MC</span>
+                  <span *ngIf="getCardBrand() === 'AMEX'" class="brand-amex">AMEX</span>
+                  <span *ngIf="!getCardBrand()" style="opacity:0.4">CARD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulario de tarjeta -->
+          <div class="card-form-fields">
+            <form [formGroup]="cardForm">
+              <div class="co-form-group">
+                <label class="co-label">Número de tarjeta <span class="req">*</span></label>
+                <input type="text" class="co-input" formControlName="numero"
+                  placeholder="1234 5678 9012 3456" maxlength="19"
+                  (input)="formatCardNumber($event)"
+                  [class.error]="hasError(cardForm,'numero','pattern')">
+                <span class="co-field-err" *ngIf="hasError(cardForm,'numero','pattern')">
+                  ⚠ Número inválido (16 dígitos)
+                </span>
+              </div>
+
+              <div class="co-form-group">
+                <label class="co-label">Nombre del titular <span class="req">*</span></label>
+                <input type="text" class="co-input" formControlName="titular"
+                  placeholder="MARIA GARCIA" style="text-transform:uppercase">
+              </div>
+
+              <div class="form-row-2">
+                <div class="co-form-group">
+                  <label class="co-label">Vencimiento <span class="req">*</span></label>
+                  <input type="text" class="co-input" formControlName="expiry"
+                    placeholder="MM/AA" maxlength="5" (input)="formatExpiry($event)">
+                </div>
+                <div class="co-form-group">
+                  <label class="co-label">CVV <span class="req">*</span></label>
+                  <input type="password" class="co-input" formControlName="cvv"
+                    placeholder="•••" maxlength="4">
+                  <span class="co-hint">3 dígitos al reverso</span>
+                </div>
+              </div>
+            </form>
+
+            <div class="card-security-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              Tus datos están protegidos con encriptación SSL de 256 bits
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRANSFERENCIA ── -->
+      <div class="pm-detail-panel animate-in" *ngIf="false">
+        <div class="bank-info">
+          <h4>Datos para transferencia bancaria</h4>
+          <div class="bank-account">
+            <div class="bank-row"><span>Banco</span><strong>BCP</strong></div>
+            <div class="bank-row"><span>Cuenta corriente</span><strong>194-2345678-0-12</strong></div>
+            <div class="bank-row"><span>CCI</span><strong>00219400234567800112</strong></div>
+            <div class="bank-row"><span>Titular</span><strong>Raymi Suprême SAC</strong></div>
+            <div class="bank-row"><span>RUC</span><strong>20123456789</strong></div>
+          </div>
+          <div class="bank-note">
+            📧 Envía el comprobante de pago a <strong>pagos&#64;raymisupreme.pe</strong>
+            con el número de tu pedido
+          </div>
+        </div>
+      </div>
+
+      <div class="co-card__actions">
+        <button class="co-btn-outline" (click)="goStep(1)">← Volver</button>
+      </div>
+    </div>
+
+    <!-- ====== STEP 3: RESUMEN Y CONFIRMACIÓN ====== -->
+    <div class="co-card animate-in" *ngIf="step === 3">
+      <div class="co-card__header">
+        <div class="co-card__icon">✅</div>
+        <h2>Confirmar pedido</h2>
+      </div>
+
+      <!-- Resumen datos entrega -->
+      <div class="confirm-block">
+        <div class="confirm-block__header">
+          <h4>📍 Datos de entrega</h4>
+          <button class="edit-link" (click)="goStep(1)">Editar</button>
+        </div>
+        <div class="confirm-block__body">
+          <p><strong>{{ clienteForm.value.nombres }}</strong></p>
+          <p>{{ clienteForm.value.email }}</p>
+          <p>{{ clienteForm.value.direccionEnvio }}, {{ clienteForm.value.ciudad }}, {{ clienteForm.value.pais }}</p>
+        </div>
+      </div>
+
+      <!-- Resumen método de pago -->
+      <div class="confirm-block">
+        <div class="confirm-block__header">
+          <h4>{{ selectedMetodo?.icon }} Método de pago</h4>
+          <button class="edit-link" (click)="goStep(2)">Editar</button>
+        </div>
+        <div class="confirm-block__body">
+          <p><strong>{{ selectedMetodo?.label }}</strong></p>
+          <p *ngIf="false">
+            Tarjeta terminada en {{ cardForm.get('numero')?.value.slice(-4) }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Items del pedido -->
+      <div class="confirm-block">
+        <div class="confirm-block__header">
+          <h4>🛍️ Productos ({{ count }})</h4>
+        </div>
+        <div class="confirm-item" *ngFor="let item of items">
+          <div class="confirm-item__img">
+            <img [src]="item.urlFoto || 'assets/placeholder.jpg'" [alt]="item.nombrePrenda">
+          </div>
+          <div class="confirm-item__info">
+            <div class="confirm-item__name">{{ item.nombrePrenda }}</div>
+            <div class="confirm-item__meta" *ngIf="item.talla">
+              Talla {{ item.talla }} · {{ item.color }}
+            </div>
+            <div class="confirm-item__qty">Cantidad: {{ item.cantidad }}</div>
+          </div>
+          <div class="confirm-item__price">
+            S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="co-card__actions">
+        <button class="co-btn-outline" (click)="goStep(2)">← Volver</button>
+        <button class="co-btn-primary co-btn-confirm" [disabled]="loading" (click)="confirmOrder()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          Confirmar y pagar S/ {{ total | number:'1.2-2' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== LADO DERECHO: RESUMEN DEL PEDIDO ===== -->
+  <div class="checkout-summary">
+    <div class="summary-card">
+      <h3 class="summary-card__title">Tu pedido</h3>
+
+      <div class="summary-items">
+        <div class="summary-item" *ngFor="let item of items">
+          <div class="summary-item__img">
+            <img [src]="item.urlFoto || 'assets/placeholder.jpg'" [alt]="item.nombrePrenda">
+            <span class="summary-item__qty">{{ item.cantidad }}</span>
+          </div>
+          <div class="summary-item__name">{{ item.nombrePrenda }}</div>
+          <div class="summary-item__price">S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="summary-row">
+        <span>Subtotal ({{ count }} items)</span>
+        <span>S/ {{ total | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-row">
+        <span>Envío</span>
+        <span class="free-shipping">A coordinar</span>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="summary-total">
+        <span>Total</span>
+        <span>S/ {{ total | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="summary-security">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Pago 100% seguro · SSL 256-bit
+      </div>
+
+      <!-- Métodos aceptados -->
+      <div class="summary-methods">
+        <span>Mercado Pago</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     STEP 4: PROCESANDO PAGO
+============================================================ -->
+<div class="transition-screen animate-in" *ngIf="step === 4">
+
+    <!-- ── FASE 1: Procesando ── -->
+    <div class="ts-processing" [class.ts-hidden]="transitionPhase === 'success'">
+        <div class="ts-orbit">
+            <div class="ts-orbit__ring ts-orbit__ring--1"></div>
+            <div class="ts-orbit__ring ts-orbit__ring--2"></div>
+            <div class="ts-orbit__ring ts-orbit__ring--3"></div>
+            <div class="ts-orbit__center">
+                <span>🔒</span>
+            </div>
+        </div>
+
+        <h2 class="ts-title">Procesando tu pago</h2>
+        <p class="ts-subtitle">Estamos confirmando tu pedido de forma segura...</p>
+
+        <div class="ts-steps-list">
+            <div class="ts-step-item ts-step-done">
+                <div class="ts-step-dot ts-done"></div>
+                <span>Validando datos del cliente</span>
+            </div>
+            <div class="ts-step-item ts-step-done">
+                <div class="ts-step-dot ts-done"></div>
+                <span>Registrando pedido en el sistema</span>
+            </div>
+            <div class="ts-step-item">
+                <div class="ts-step-dot ts-active"></div>
+                <span>Procesando pago con {{ selectedMetodo?.icon }} {{ selectedMetodo?.label }}...</span>
+            </div>
+            <div class="ts-step-item ts-pending">
+                <div class="ts-step-dot"></div>
+                <span>Generando comprobante</span>
+            </div>
+        </div>
+
+        <div class="ts-security-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Conexión segura SSL 256-bit · No cierres esta ventana
+        </div>
+    </div>
+
+    <!-- ── FASE 2: Éxito ── -->
+    <div class="ts-success" [class.ts-visible]="transitionPhase === 'success'">
+        <div class="ts-success-burst">
+            <div class="ts-burst-ring ts-burst-ring--1"></div>
+            <div class="ts-burst-ring ts-burst-ring--2"></div>
+            <div class="ts-burst-ring ts-burst-ring--3"></div>
+            <div class="ts-success-icon">✓</div>
+        </div>
+
+        <h2 class="ts-title ts-success-title">¡Pago aprobado!</h2>
+        <p class="ts-subtitle">Tu comprobante está listo. Redirigiendo...</p>
+
+        <!-- Confetti dots (CSS puro) -->
+        <div class="ts-confetti">
+            <div class="ts-dot ts-dot--1"></div>
+            <div class="ts-dot ts-dot--2"></div>
+            <div class="ts-dot ts-dot--3"></div>
+            <div class="ts-dot ts-dot--4"></div>
+            <div class="ts-dot ts-dot--5"></div>
+            <div class="ts-dot ts-dot--6"></div>
+            <div class="ts-dot ts-dot--7"></div>
+            <div class="ts-dot ts-dot--8"></div>
+        </div>
+
+        <div class="ts-redirect-bar">
+            <div class="ts-redirect-fill"></div>
+        </div>
+        <p class="ts-redirect-text">Abriendo tu comprobante...</p>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     STEP 5: VOUCHER / PAGO COMPLETADO
+============================================================ -->
+<div class="voucher-page animate-in" *ngIf="step === 5 && pedidoCompletado">
+  <div class="container">
+    <div class="voucher-wrapper">
+
+      <!-- Éxito header -->
+      <div class="voucher-success-header">
+        <div class="success-checkmark">
+          <svg viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+        <h1>¡Pago completado!</h1>
+        <p>Tu pedido ha sido registrado y está siendo preparado con amor artesanal</p>
+      </div>
+
+      <!-- VOUCHER -->
+      <div class="voucher-doc" id="voucher">
+        <!-- Header del voucher -->
+        <div class="voucher-doc__header">
+          <div class="voucher-doc__brand">
+            <span class="voucher-brand-icon">🏔️</span>
+            <div>
+              <div class="voucher-brand-name">RAYMI SUPRÊME</div>
+              <div class="voucher-brand-sub">Moda andina · Tejidos a mano</div>
+            </div>
+          </div>
+          <div class="voucher-doc__num">
+            <div class="voucher-num-label">COMPROBANTE</div>
+            <div class="voucher-num-value">{{ voucherNumero }}</div>
+            <div class="voucher-num-date">{{ pedidoCompletado.fecha | date:'dd/MM/yyyy HH:mm' }}</div>
+          </div>
+        </div>
+
+        <div class="voucher-divider"></div>
+
+        <!-- Datos del cliente y entrega -->
+        <div class="voucher-section-grid">
+          <div class="voucher-section">
+            <div class="voucher-section__title">DATOS DEL COMPRADOR</div>
+            <div class="voucher-detail"><span>Nombre</span><strong>{{ pedidoCompletado.nombreCliente }}</strong></div>
+            <div class="voucher-detail"><span>Email</span><strong>{{ pedidoCompletado.email }}</strong></div>
+            <div class="voucher-detail"><span>Ciudad</span><strong>{{ pedidoCompletado.ciudad }}</strong></div>
+            <div class="voucher-detail"><span>Dirección</span><strong>{{ pedidoCompletado.direccion }}</strong></div>
+          </div>
+          <div class="voucher-section">
+            <div class="voucher-section__title">DETALLE DEL PAGO</div>
+            <div class="voucher-detail"><span>Pedido</span><strong>#{{ pedidoCompletado.idPedido }}</strong></div>
+            <div class="voucher-detail">
+              <span>Método</span>
+              <strong>{{ metodos | findMetodo : pedidoCompletado.metodoPago }}</strong>
+            </div>
+            <div class="voucher-detail">
+              <span>Estado</span>
+              <strong class="voucher-status-ok">✅ CONFIRMADO</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="voucher-divider"></div>
+
+        <!-- Tabla de ítems -->
+        <div class="voucher-section__title" style="margin-bottom: 12px">ARTÍCULOS COMPRADOS</div>
+        <table class="voucher-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Talla</th>
+              <th style="text-align:center">Cant.</th>
+              <th style="text-align:right">P. Unit.</th>
+              <th style="text-align:right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of pedidoCompletado.items">
+              <td>{{ item.nombrePrenda }}</td>
+              <td>{{ item.talla || '—' }}</td>
+              <td style="text-align:center">{{ item.cantidad }}</td>
+              <td style="text-align:right">S/ {{ item.precio | number:'1.2-2' }}</td>
+              <td style="text-align:right"><strong>S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</strong></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="voucher-total-row">
+              <td colspan="3"></td>
+              <td style="text-align:right">TOTAL</td>
+              <td style="text-align:right">
+                <strong class="voucher-total-amount">S/ {{ pedidoCompletado.total | number:'1.2-2' }}</strong>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="voucher-divider"></div>
+
+        <!-- Footer del voucher -->
+        <div class="voucher-doc__footer">
+          <p>Gracias por apoyar a las artesanas del Ande · <strong>raymisupreme.pe</strong></p>
+          <p class="voucher-footer-sub">
+            Este documento sirve como comprobante de tu compra. Consérvalos para seguimiento de tu pedido.
+          </p>
+        </div>
+      </div>
+
+      <!-- Acciones post-voucher -->
+      <div class="voucher-actions">
+        <button class="voucher-btn-print" (click)="printVoucher()">
+          🖨️ Imprimir comprobante
+        </button>
+        <a routerLink="/mis-pedidos" class="voucher-btn-orders">
+          📦 Ver mis pedidos
+        </a>
+        <a routerLink="/catalogo" class="voucher-btn-shop">
+          🛍️ Seguir comprando
+        </a>
+      </div>
+
+      <!-- ¿Qué sigue? -->
+      <div class="what-next-card">
+        <h3>¿Qué sigue?</h3>
+        <div class="what-next-steps">
+          <div class="wn-step">
+            <div class="wn-step__num">1</div>
+            <div>
+              <strong>Confirmación por correo</strong>
+              <p>Recibirás los detalles de tu pedido en <strong>{{ pedidoCompletado.email }}</strong></p>
+            </div>
+          </div>
+          <div class="wn-step">
+            <div class="wn-step__num">2</div>
+            <div>
+              <strong>Preparación artesanal</strong>
+              <p>Nuestras artesanas prepararán tu prenda con el mayor cuidado y dedicación.</p>
+            </div>
+          </div>
+          <div class="wn-step">
+            <div class="wn-step__num">3</div>
+            <div>
+              <strong>Envío en 3-7 días</strong>
+              <p>Tu pedido llegará a {{ pedidoCompletado.ciudad }} según tu dirección indicada.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1030 @@
+<!-- ══════════════════════════════════════════════════════════════
+     RAYMI SUPRÊME — Panel Administrativo
+     ══════════════════════════════════════════════════════════════ -->
+<div class="admin-shell" [class.sidebar-collapsed]="sidebarCollapsed">
+
+    <div class="system-alert" *ngIf="systemAlert" role="alert">
+        <span class="system-alert-icon">!</span>
+        <div><strong>Sistema temporalmente no disponible</strong><p>{{ systemAlert }}</p></div>
+        <button type="button" (click)="dismissSystemAlert()" aria-label="Cerrar alerta">×</button>
+    </div>
+
+    <!-- ─── SIDEBAR ─────────────────────────────────────────────── -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo.png?v=marca" alt="Raymi Suprême" class="sidebar-logo-img">
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-label">PRINCIPAL</div>
+            <a class="sidebar-link" [class.active]="activeView === 'dashboard'" (click)="setView('dashboard')">
+                <span class="sidebar-icon">▦</span>
+                <span class="sidebar-link-text">Dashboard</span>
+            </a>
+
+            <div class="sidebar-section-label">GESTIÓN</div>
+            <a class="sidebar-link" [class.active]="activeView === 'proveedores'" (click)="setView('proveedores')">
+                <span class="sidebar-icon">♟</span>
+                <span class="sidebar-link-copy"><strong>Artesanos</strong><small>proveedores artesanales</small></span>
+            </a>
+            <a class="sidebar-link" [class.active]="activeView === 'lotes'" (click)="setView('lotes')">
+                <span class="sidebar-icon">◇</span>
+                <span class="sidebar-link-copy"><strong>Acopio</strong><small>lotes de compra</small></span>
+            </a>
+            <a class="sidebar-link" [class.active]="activeView === 'prendas'" (click)="setView('prendas')">
+                <span class="sidebar-icon">▤</span>
+                <span class="sidebar-link-copy"><strong>Inventario</strong><small>prendas</small></span>
+            </a>
+            <a class="sidebar-link" [class.active]="activeView === 'catalogo'" (click)="setView('catalogo')">
+                <span class="sidebar-icon">◈</span>
+                <span class="sidebar-link-copy"><strong>Catálogo</strong><small>productos publicados</small></span>
+            </a>
+            <a class="sidebar-link" [class.active]="activeView === 'ordenes'" (click)="setView('ordenes')">
+                <span class="sidebar-icon">≣</span>
+                <span class="sidebar-link-copy"><strong>Pedidos y ventas</strong><small>órdenes / vouchers</small></span>
+            </a>
+            <a class="sidebar-link" *ngIf="!soloLectura" [class.active]="activeView === 'pagos'" (click)="setView('pagos')">
+                <span class="sidebar-icon">▣</span>
+                <span class="sidebar-link-copy"><strong>Pagos</strong></span>
+            </a>
+            <a class="sidebar-link" [class.active]="activeView === 'clientes'" (click)="setView('clientes')">
+                <span class="sidebar-icon">♟</span>
+                <span class="sidebar-link-copy"><strong>Clientes</strong></span>
+            </a>
+            <a class="sidebar-link" [class.active]="activeView === 'descuentos'" (click)="setView('descuentos')">
+                <span class="sidebar-icon">◆</span>
+                <span class="sidebar-link-copy"><strong>Descuentos</strong><small>precios del catálogo</small></span>
+            </a>
+            <a class="sidebar-link" *ngIf="!soloLectura" [class.active]="activeView === 'usuarios'" (click)="setView('usuarios')">
+                <span class="sidebar-icon">◉</span>
+                <span class="sidebar-link-copy"><strong>Usuarios y roles</strong></span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button type="button" class="sidebar-user" (click)="toggleCuenta($event)" [attr.aria-expanded]="cuentaAbierta">
+                <div class="sidebar-user-avatar">{{ adminInitial }}</div>
+                <div class="sidebar-user-info">
+                    <span class="sidebar-user-name">{{ adminName }}</span>
+                    <span class="sidebar-user-role">{{ adminRole }}</span>
+                </div>
+            </button>
+            <div class="sidebar-account-menu" *ngIf="cuentaAbierta">
+                <button type="button" (click)="irATienda()">Ir a la tienda</button>
+                <button type="button" class="is-exit" (click)="cerrarSesion()">Cerrar sesión</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ─── MAIN ──────────────────────────────────────────────────── -->
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <h2 class="topbar-title">
+                    <ng-container [ngSwitch]="activeView">
+                        <ng-container *ngSwitchCase="'dashboard'">Panel de control</ng-container>
+                        <ng-container *ngSwitchCase="'proveedores'">Proveedores · Artesanos</ng-container>
+                        <ng-container *ngSwitchCase="'lotes'">Lotes de Compra</ng-container>
+                        <ng-container *ngSwitchCase="'prendas'">Prendas</ng-container>
+                        <ng-container *ngSwitchCase="'catalogo'">Catálogo</ng-container>
+                        <ng-container *ngSwitchCase="'ordenes'">Órdenes / Vouchers</ng-container>
+                        <ng-container *ngSwitchCase="'pagos'">Pagos</ng-container>
+                        <ng-container *ngSwitchCase="'clientes'">Clientes</ng-container>
+                        <ng-container *ngSwitchCase="'descuentos'">Descuentos</ng-container>
+                        <ng-container *ngSwitchCase="'usuarios'">Usuarios y roles</ng-container>
+                    </ng-container>
+                </h2>
+                <p class="topbar-subtitle" *ngIf="activeView === 'dashboard' && !soloLectura">Gestiona artesanos, acopio, inventario, catálogo, pedidos y pagos desde un solo lugar.</p>
+                <p class="topbar-subtitle" *ngIf="soloLectura">Consulta de tienda. No puedes crear, editar, cobrar ni administrar usuarios.</p>
+            </div>
+            <div class="topbar-right">
+                <span class="topbar-date">{{ today }}</span>
+                <a href="/" class="btn-outline-sm" target="_blank">🛍 Ver tienda</a>
+            </div>
+        </header>
+
+        <!-- ══════════ DASHBOARD ══════════ -->
+        <section *ngIf="activeView === 'dashboard'" class="admin-content">
+
+            <!-- KPI cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-green">S/</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value">S/ {{ metrics.totalVentas | number:'1.2-2' }}</span>
+                        <span class="kpi-label">Ventas totales</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-blue">📋</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value">{{ metrics.pedidosHoy }}</span>
+                        <span class="kpi-label">Pedidos hoy</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-orange">📦</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value">{{ metrics.stockTotal }}</span>
+                        <span class="kpi-label">Unidades en stock</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-purple">👥</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value">{{ metrics.artesanos }}</span>
+                        <span class="kpi-label">Artesanos activos</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-mint">▣</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value">{{ metrics.pagosConfirmados }}</span>
+                        <span class="kpi-label">Pagos confirmados</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-coral">🏷</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value">{{ metrics.productosPublicados }}</span>
+                        <span class="kpi-label">Productos publicados</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart + Estado pedidos -->
+            <div class="dashboard-row">
+
+                <!-- Ingresos semanales -->
+                <div class="admin-card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Ingresos últimos 7 días</h3>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar-chart-bars">
+                            <div class="bar-col" *ngFor="let val of metrics.ingresosSemanales; let i = index">
+                                <div class="bar-fill" [style.height.%]="chartBarHeight(val)"></div>
+                                <span class="bar-label">{{ chartDays[i] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado de pedidos -->
+                <div class="admin-card estado-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Estado de pedidos</h3>
+                        <span class="card-total">{{ getTotalPedidos() }} total</span>
+                    </div>
+                    <div class="estado-list">
+                        <div class="estado-row">
+                            <span class="estado-dot dot-warning"></span>
+                            <span class="estado-name">Pendiente</span>
+                            <span class="estado-count">{{ metrics.pedidosPorEstado['PENDIENTE'] || 0 }}</span>
+                        </div>
+                        <div class="estado-row">
+                            <span class="estado-dot dot-success"></span>
+                            <span class="estado-name">Pagado</span>
+                            <span class="estado-count">{{ metrics.pedidosPorEstado['PAGADO'] || 0 }}</span>
+                        </div>
+                        <div class="estado-row">
+                            <span class="estado-dot dot-muted"></span>
+                            <span class="estado-name">Cancelado</span>
+                            <span class="estado-count">{{ metrics.pedidosPorEstado['CANCELADO'] || 0 }}</span>
+                        </div>
+                        <div class="estado-row">
+                            <span class="estado-dot dot-primary"></span>
+                            <span class="estado-name">Enviado</span>
+                            <span class="estado-count">{{ metrics.pedidosPorEstado['ENVIADO'] || 0 }}</span>
+                        </div>
+                        <div class="estado-row">
+                            <span class="estado-dot dot-success"></span>
+                            <span class="estado-name">Entregado</span>
+                            <span class="estado-count">{{ metrics.pedidosPorEstado['ENTREGADO'] || 0 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card summary-card">
+                    <div class="card-header"><h3 class="card-title">Resumen operativo</h3></div>
+                    <div class="summary-list">
+                        <div><span>👥 Artesanos registrados</span><strong>{{ metrics.artesanos }}</strong></div>
+                        <div><span>📦 Lotes en acopio</span><strong>{{ metrics.lotesTotal }}</strong></div>
+                        <div><span>👕 Prendas en inventario</span><strong>{{ metrics.stockTotal }}</strong></div>
+                        <div><span>🏷 Productos en catálogo</span><strong>{{ metrics.productosPublicados }}</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="dashboard-bottom">
+            <div class="admin-card">
+                <div class="card-header"><h3 class="card-title">Acciones rápidas</h3></div>
+                <div class="quick-actions">
+                    <button class="qa-btn" *ngIf="!soloLectura" (click)="setView('prendas')">
+                        <span class="qa-icon">👕</span>
+                        <span>Nueva prenda</span>
+                    </button>
+                    <button class="qa-btn" *ngIf="!soloLectura" (click)="setView('proveedores')">
+                        <span class="qa-icon">👥</span>
+                        <span>Nuevo proveedor</span>
+                    </button>
+                    <button class="qa-btn" *ngIf="!soloLectura" (click)="setView('lotes')">
+                        <span class="qa-icon">📦</span>
+                        <span>Nuevo lote</span>
+                    </button>
+                    <button class="qa-btn" (click)="setView('ordenes')">
+                        <span class="qa-icon">📋</span>
+                        <span>Ver órdenes</span>
+                    </button>
+                    <button class="qa-btn" *ngIf="!soloLectura" (click)="setView('descuentos')">
+                        <span class="qa-icon">🏷</span>
+                        <span>Crear descuento</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-card recent-orders">
+                <div class="card-header">
+                    <h3 class="card-title">Pedidos recientes</h3>
+                    <button type="button" class="text-action" (click)="setView('ordenes')">Ver todos →</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table compact-table">
+                        <thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead>
+                        <tbody>
+                        <tr *ngFor="let o of ordenesRecientes">
+                            <td class="td-mono">#{{ o.idPedido }}</td>
+                            <td>{{ o.nombreCliente || ('Cliente #' + o.idCliente) }}</td>
+                            <td>{{ o.fechaPedido | date:'dd/MM/yyyy' }}</td>
+                            <td>S/ {{ o.totalPagar | number:'1.2-2' }}</td>
+                            <td><span class="badge" [ngClass]="getEstadoBadgeClass(o.estadoPedido)">{{ o.estadoPedido }}</span></td>
+                        </tr>
+                        <tr *ngIf="!ordenesRecientes.length"><td colspan="5" class="td-empty">No hay pedidos recientes</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- ══════════ PROVEEDORES ══════════ -->
+        <section *ngIf="activeView === 'proveedores'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Artesanos proveedores</h3>
+                        <p class="card-subtitle">{{ proveedores.length }} registrados</p>
+                    </div>
+                    <button class="btn-primary-sm" *ngIf="!soloLectura" (click)="openProveedorModal()">+ Nuevo proveedor</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>DNI</th>
+                            <th>Teléfono</th>
+                            <th>Comunidad</th>
+                            <th>Región</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let p of proveedores; let i = index">
+                            <td class="td-num">{{ i + 1 }}</td>
+                            <td class="td-name">{{ p.nombres ?? p.nombre }} {{ p.apellidos ?? p.apellido }}</td>
+                            <td class="td-mono">{{ p.dni }}</td>
+                            <td class="td-mono">{{ p.telefono }}</td>
+                            <td>{{ p.comunidadOZona ?? p.comunidad ?? '—' }}</td>
+                            <td><span class="tag">{{ p.region }}</span></td>
+                            <td class="td-actions">
+                                <button class="btn-icon btn-edit" *ngIf="!soloLectura" (click)="openProveedorModal(p)" title="Editar">✏️</button>
+                                <button class="btn-icon btn-del" *ngIf="!soloLectura" (click)="deleteProveedor(p.idArtesano)" title="Eliminar">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!proveedores.length">
+                            <td colspan="7" class="td-empty">No hay proveedores registrados</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ LOTES ══════════ -->
+        <section *ngIf="activeView === 'lotes'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Lotes de compra</h3>
+                        <p class="card-subtitle">{{ lotes.length }} lotes registrados</p>
+                    </div>
+                    <button class="btn-primary-sm" *ngIf="!soloLectura" (click)="openLoteModal()">+ Nuevo lote</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Artesano</th>
+                            <th>Fecha compra</th>
+                            <th>Unidades</th>
+                            <th>Total pagado</th>
+                            <th>Estado</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let l of lotes; let i = index">
+                            <td class="td-num">{{ i + 1 }}</td>
+                            <td class="td-name">{{ getArtesanoNombre(l.idArtesano) }}</td>
+                            <td class="td-mono">{{ l.fechaCompra | date:'dd/MM/yyyy' }}</td>
+                            <td class="td-num">{{ l.cantidadTotalRecibida ?? l.cantidadItems }}</td>
+                            <td class="td-mono">S/ {{ (l.precioTotalPagado ?? l.montoTotal) | number:'1.2-2' }}</td>
+                            <td><span class="tag tag-blue">{{ l.estadoLote }}</span></td>
+                            <td class="td-desc">{{ l.descripcionGeneral ?? l.descripcion ?? '—' }}</td>
+                            <td class="td-actions">
+                                <button class="btn-icon btn-edit" *ngIf="!soloLectura" (click)="openLoteModal(l)" title="Editar">✏️</button>
+                                <button class="btn-icon btn-del" *ngIf="!soloLectura" (click)="deleteLote(l.idLote)" title="Eliminar">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!lotes.length">
+                            <td colspan="8" class="td-empty">No hay lotes registrados</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ PRENDAS — 3-step workflow ══════════ -->
+        <section *ngIf="activeView === 'prendas'" class="admin-content">
+
+            <!-- ── LIST ─────────────────────────────────────────────── -->
+            <ng-container *ngIf="prendasStep === 'list'">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Prendas del inventario</h3>
+                            <p class="card-subtitle">{{ prendas.length }} prendas · {{ catalogoItems.length }} publicadas en catálogo</p>
+                        </div>
+                        <button class="btn-primary-sm" *ngIf="!soloLectura" (click)="openCrearPrenda()">+ Nueva prenda</button>
+                    </div>
+
+                    <!-- Workflow explainer -->
+                    <div class="workflow-banner">
+                        <div class="wf-step">
+                            <span class="wf-num">1</span>
+                            <div>
+                                <strong>Crear prenda</strong>
+                                <p>Registrar en inventario</p>
+                            </div>
+                        </div>
+                        <span class="wf-arrow">→</span>
+                        <div class="wf-step">
+                            <span class="wf-num">2</span>
+                            <div>
+                                <strong>Asignar precio</strong>
+                                <p>POST /api/v1/precios/prendas</p>
+                            </div>
+                        </div>
+                        <span class="wf-arrow">→</span>
+                        <div class="wf-step">
+                            <span class="wf-num">3</span>
+                            <div>
+                                <strong>Publicar</strong>
+                                <p>Aparece en el catálogo público</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>SKU</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Talla</th>
+                                <th>Color</th>
+                                <th>Material</th>
+                                <th>Stock</th>
+                                <th>Catálogo</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let p of prendas" [class.row-unpublished]="!isPublicada(p)">
+                                <td>
+                                    <div class="product-thumb" [class.product-thumb-empty]="!getPrendaFoto(p)">
+                                        <img *ngIf="getPrendaFoto(p) as foto" [src]="foto" [alt]="p.nombrePrenda"/>
+                                        <span *ngIf="!getPrendaFoto(p)">Sin foto</span>
+                                    </div>
+                                </td>
+                                <td class="td-mono">{{ p.codigoUnico ?? p.codigoSku }}</td>
+                                <td class="td-name">{{ p.nombrePrenda }}</td>
+                                <td>{{ getCategoriaNombre(p.idCategoria) }}</td>
+                                <td class="td-num">{{ p.talla }}</td>
+                                <td>{{ p.color }}</td>
+                                <td>{{ p.material }}</td>
+                                <td class="td-num" [class.stock-low]="p.stock <= 5">{{ p.stock }}</td>
+                                <td>
+                                    <span class="badge-catalog badge-pub" *ngIf="isPublicada(p)">✓ Publicada</span>
+                                    <span class="badge-catalog badge-nopub" *ngIf="!isPublicada(p)">Sin publicar</span>
+                                </td>
+                                <td class="td-actions">
+                                    <ng-container *ngIf="!soloLectura">
+                                    <button class="btn-icon btn-edit" (click)="openCrearPrenda(p)" title="Editar prenda" aria-label="Editar prenda">&#9998;</button>
+                                    <button class="btn-icon btn-precio" (click)="openAsignarPrecio(p)" title="Precio">💲</button>
+                                    <button class="btn-icon btn-pub" *ngIf="!isPublicada(p)" (click)="openPublicar(p)" title="Publicar">🌐</button>
+                                    <button class="btn-icon btn-despub" *ngIf="isPublicada(p)" (click)="despublicarPrenda(p)" title="Retirar del catálogo">⛔</button>
+                                    <button class="btn-icon btn-del" (click)="deletePrenda(p.idPrenda)" title="Eliminar">🗑️</button>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                            <tr *ngIf="!prendas.length">
+                                <td colspan="10" class="td-empty">No hay prendas. Crea una con el botón de arriba.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- ── STEP 1: CREAR PRENDA ──────────────────────────────── -->
+            <ng-container *ngIf="prendasStep === 'create'">
+                <div class="workflow-steps-header">
+                    <div class="ws-step ws-active">
+                        <span class="ws-num">1</span>Crear prenda
+                    </div>
+                    <span class="ws-sep">→</span>
+                    <div class="ws-step ws-next">
+                        <span class="ws-num">2</span>Asignar precio
+                    </div>
+                    <span class="ws-sep">→</span>
+                    <div class="ws-step ws-next">
+                        <span class="ws-num">3</span>Publicar
+                    </div>
+                </div>
+
+                <div class="admin-card form-card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ editingPrenda ? 'Editar prenda' : 'Nueva prenda' }}</h3>
+                        <button class="btn-ghost" (click)="backToList()">← Volver</button>
+                    </div>
+
+                    <form [formGroup]="prendaForm" (ngSubmit)="savePrenda()" class="admin-form">
+                        <div class="form-grid-2">
+                            <div class="form-field">
+                                <label>Lote de origen *</label>
+                                <select formControlName="idLote">
+                                    <option value="">Seleccionar lote…</option>
+                                    <option *ngFor="let l of lotes" [value]="l.idLote">
+                                        Lote #{{ l.idLote }} — {{ l.descripcionGeneral ?? l.descripcion }}
+                                    </option>
+                                </select>
+                                <span class="form-error" *ngIf="prendaForm.get('idLote')?.touched && prendaForm.get('idLote')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Categoría *</label>
+                                <select formControlName="idCategoria">
+                                    <option value="">Seleccionar categoría…</option>
+                                    <option *ngFor="let c of categorias" [value]="c.idCategoria ?? c.id">{{ c.nombre }}</option>
+                                </select>
+                                <span class="form-error" *ngIf="prendaForm.get('idCategoria')?.touched && prendaForm.get('idCategoria')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Código SKU *</label>
+                                <input type="text" formControlName="codigoUnico" placeholder="Ej: CH-001"/>
+                                <span class="form-error" *ngIf="prendaForm.get('codigoUnico')?.touched && prendaForm.get('codigoUnico')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Público objetivo *</label>
+                                <select formControlName="publico">
+                                    <option value="MUJER">MUJER</option>
+                                    <option value="VARON">VARÓN</option>
+                                    <option value="NINOS">NIÑOS</option>
+                                    <option value="UNISEX">UNISEX</option>
+                                </select>
+                                <span class="form-error" *ngIf="prendaForm.get('publico')?.touched && prendaForm.get('publico')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Nombre de la prenda *</label>
+                                <input type="text" formControlName="nombrePrenda" placeholder="Ej: Chalina Andina Premium"/>
+                                <span class="form-error" *ngIf="prendaForm.get('nombrePrenda')?.touched && prendaForm.get('nombrePrenda')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Talla *</label>
+                                <select formControlName="talla">
+                                    <option value="">Seleccionar…</option>
+                                    <option>XS</option><option>S</option><option>M</option>
+                                    <option>L</option><option>XL</option><option>XXL</option><option>Único</option>
+                                </select>
+                                <span class="form-error" *ngIf="prendaForm.get('talla')?.touched && prendaForm.get('talla')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Color *</label>
+                                <input type="text" formControlName="color" placeholder="Ej: Rojo vino"/>
+                                <span class="form-error" *ngIf="prendaForm.get('color')?.touched && prendaForm.get('color')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Material</label>
+                                <input type="text" formControlName="material"/>
+                            </div>
+                            <div class="form-field">
+                                <label>Stock inicial *</label>
+                                <input type="number" formControlName="stock" min="0" placeholder="0"/>
+                                <span class="form-error" *ngIf="prendaForm.get('stock')?.touched && prendaForm.get('stock')?.invalid">Requerido (mín. 0)</span>
+                            </div>
+                        </div>
+
+                        <!-- Imagen -->
+                        <div class="form-field form-image">
+                            <label>Imagen de la prenda</label>
+                            <div class="img-upload-area">
+                                <div class="img-preview" *ngIf="imagePreview">
+                                    <img [src]="imagePreview" alt="Preview"/>
+                                </div>
+                                <div class="img-placeholder" *ngIf="!imagePreview">🖼️ Sin imagen</div>
+                                <input type="file" accept="image/*" (change)="onImageSelected($event)" class="img-file-input"/>
+                                <span class="img-hint">JPG / PNG / WEBP — máx 10MB</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-ghost" (click)="backToList()">Cancelar</button>
+                            <button type="submit" class="btn-primary">
+                                {{ editingPrenda ? 'Guardar cambios' : 'Crear prenda y continuar →' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </ng-container>
+
+            <!-- ── STEP 2: ASIGNAR PRECIO ────────────────────────────── -->
+            <ng-container *ngIf="prendasStep === 'precio'">
+                <div class="workflow-steps-header">
+                    <div class="ws-step ws-done">
+                        <span class="ws-num">✓</span>Crear prenda
+                    </div>
+                    <span class="ws-sep">→</span>
+                    <div class="ws-step ws-active">
+                        <span class="ws-num">2</span>Asignar precio
+                    </div>
+                    <span class="ws-sep">→</span>
+                    <div class="ws-step ws-next">
+                        <span class="ws-num">3</span>Publicar
+                    </div>
+                </div>
+
+                <div class="admin-card form-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Asignar precio</h3>
+                            <p class="card-subtitle">Prenda: <strong>{{ selectedPrenda?.nombrePrenda }}</strong></p>
+                        </div>
+                        <button class="btn-ghost" (click)="backToList()">← Cancelar</button>
+                    </div>
+
+                    <div class="info-box" *ngIf="precioExistente">
+                        <span>ℹ️</span> Esta prenda ya tiene precio: <strong>S/ {{ precioExistente.precioBase | number:'1.2-2' }}</strong>. Puedes actualizarlo.
+                    </div>
+
+                    <form [formGroup]="precioForm" (ngSubmit)="savePrecio()" class="admin-form">
+                        <div class="form-grid-2">
+                            <div class="form-field">
+                                <label>Nombre del precio *</label>
+                                <input type="text" formControlName="nombre" placeholder="Ej: Precio temporada 2026"/>
+                                <span class="form-error" *ngIf="precioForm.get('nombre')?.touched && precioForm.get('nombre')?.invalid">Requerido</span>
+                            </div>
+                            <div class="form-field">
+                                <label>Precio base (S/) *</label>
+                                <input type="number" formControlName="precioBase" min="0.01" step="0.01" placeholder="0.00"/>
+                                <span class="form-error" *ngIf="precioForm.get('precioBase')?.touched && precioForm.get('precioBase')?.invalid">Ingresa un precio válido</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-ghost" (click)="skipPrecio()">Omitir por ahora →</button>
+                            <button type="submit" class="btn-primary">Guardar precio y continuar →</button>
+                        </div>
+                    </form>
+                </div>
+            </ng-container>
+
+            <!-- ── STEP 3: PUBLICAR ──────────────────────────────────── -->
+            <ng-container *ngIf="prendasStep === 'publish'">
+                <div class="workflow-steps-header">
+                    <div class="ws-step ws-done"><span class="ws-num">✓</span>Crear prenda</div>
+                    <span class="ws-sep">→</span>
+                    <div class="ws-step ws-done"><span class="ws-num">✓</span>Precio</div>
+                    <span class="ws-sep">→</span>
+                    <div class="ws-step ws-active"><span class="ws-num">3</span>Publicar</div>
+                </div>
+
+                <div class="admin-card form-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Publicar en catálogo público</h3>
+                            <p class="card-subtitle">Prenda: <strong>{{ selectedPrenda?.nombrePrenda }}</strong> — al publicar aparecerá en la tienda</p>
+                        </div>
+                        <button class="btn-ghost" (click)="backToList()">← Cancelar</button>
+                    </div>
+
+                    <div class="info-box info-success" *ngIf="isPublicada(selectedPrenda)">
+                        <span>✅</span> Esta prenda ya está publicada. Puedes actualizar su información.
+                    </div>
+
+                    <form [formGroup]="publishForm" (ngSubmit)="publishPrenda()" class="admin-form">
+                        <div class="form-field">
+                            <label>Descripción pública *</label>
+                            <textarea formControlName="descripcionPublica" rows="4"
+                                      placeholder="Describe la prenda para los compradores — materiales, técnica de tejido, historia artesanal…"></textarea>
+                            <span class="form-error" *ngIf="publishForm.get('descripcionPublica')?.touched && publishForm.get('descripcionPublica')?.invalid">La descripción es requerida</span>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-field form-image">
+                                <label>Imagen para la tienda *</label>
+                                <div class="img-upload-area">
+                                    <div class="img-preview" *ngIf="imagePreview">
+                                        <img [src]="imagePreview" alt="Vista previa de la prenda"/>
+                                    </div>
+                                    <div class="img-placeholder" *ngIf="!imagePreview">🖼️ Seleccionar imagen</div>
+                                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+                                           (change)="onImageSelected($event)" class="img-file-input"/>
+                                    <span class="img-hint">JPG / PNG / WEBP / GIF — máximo 10MB</span>
+                                </div>
+                                <input type="hidden" formControlName="urlFoto"/>
+                            </div>
+                            <div class="form-field form-check">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" formControlName="destacado"/>
+                                    <span>Marcar como destacada (aparece en el home)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="publish-summary">
+                            <div class="publish-api">
+                                <span class="api-label">Endpoint que se ejecutará:</span>
+                                <code>POST /api/v1/catalogo/items</code>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-ghost" (click)="backToList()">Cancelar</button>
+                            <button type="submit" class="btn-publish">
+                                🌐 {{ isPublicada(selectedPrenda) ? 'Actualizar en catálogo' : 'Publicar en tienda' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </ng-container>
+        </section>
+
+        <!-- ══════════ ÓRDENES ══════════ -->
+        <section *ngIf="activeView === 'ordenes'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Órdenes de compra</h3>
+                        <p class="card-subtitle">{{ ordenes.length }} pedidos</p>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th># Pedido</th>
+                            <th>Cliente ID</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let o of ordenes">
+                            <td class="td-mono">#{{ o.idPedido }}</td>
+                            <td class="td-num">{{ o.idCliente }}</td>
+                            <td class="td-mono">{{ o.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</td>
+                            <td class="td-mono">S/ {{ o.totalPagar | number:'1.2-2' }}</td>
+                            <td>
+                                <span class="badge" [ngClass]="getEstadoBadgeClass(o.estadoPedido)">{{ o.estadoPedido }}</span>
+                            </td>
+                            <td class="td-actions">
+                                <button class="btn-icon btn-edit" (click)="openOrdenModal(o)" title="Ver / actualizar">👁️</button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!ordenes.length">
+                            <td colspan="6" class="td-empty">No hay pedidos registrados</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ PROMOCIONES ══════════ -->
+        <section *ngIf="activeView === 'catalogo'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header"><div><h3 class="card-title">Catálogo publicado</h3><p class="card-subtitle">Información real de ms-catalogo</p></div></div>
+                <div class="table-wrap"><table class="admin-table">
+                    <thead><tr><th>ID</th><th>Prenda</th><th>Descripción</th><th>Destacado</th><th>Estado</th></tr></thead>
+                    <tbody>
+                    <tr *ngFor="let item of catalogoItems">
+                        <td class="td-mono">#{{ item.idItem ?? item.id }}</td><td>{{ item.idPrenda }}</td><td class="td-desc">{{ item.descripcionPublica }}</td>
+                        <td>{{ item.destacado ? 'Sí' : 'No' }}</td><td><span class="badge" [ngClass]="item.activo ? 'badge-success' : 'badge-secondary'">{{ item.activo ? 'Publicado' : 'Retirado' }}</span></td>
+                    </tr>
+                    <tr *ngIf="!catalogoItems.length"><td colspan="5" class="td-empty">No hay productos publicados</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </section>
+
+        <section *ngIf="activeView === 'pagos'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header"><div><h3 class="card-title">Pagos</h3><p class="card-subtitle">Transacciones registradas en ms-pagos</p></div></div>
+                <div class="table-wrap"><table class="admin-table">
+                    <thead><tr><th>ID</th><th>Pedido</th><th>Cliente</th><th>Método</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr></thead>
+                    <tbody>
+                    <tr *ngFor="let p of pagos"><td class="td-mono">#{{ p.id }}</td><td>#{{ p.pedidoId }}</td><td>#{{ p.clienteId }}</td><td>{{ p.metodoPago }}</td><td>S/ {{ p.monto | number:'1.2-2' }}</td><td><span class="badge badge-info">{{ p.estado }}</span></td><td>{{ p.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td></tr>
+                    <tr *ngIf="!pagos.length"><td colspan="7" class="td-empty">No hay pagos registrados</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </section>
+
+        <section *ngIf="activeView === 'clientes'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header"><div><h3 class="card-title">Clientes</h3><p class="card-subtitle">Clientes registrados en ms-ventas</p></div></div>
+                <div class="table-wrap"><table class="admin-table">
+                    <thead><tr><th>ID</th><th>Cliente</th><th>Usuario</th><th>Email</th><th>País</th><th>Ciudad</th><th>Dirección</th></tr></thead>
+                    <tbody>
+                    <tr *ngFor="let c of clientes"><td class="td-mono">#{{ c.idCliente }}</td><td class="td-name">{{ c.nombres }} {{ c.apellidos }}</td><td>{{ c.username }}</td><td>{{ c.email }}</td><td>{{ c.pais }}</td><td>{{ c.ciudad }}</td><td class="td-desc">{{ c.direccionEnvio }}</td></tr>
+                    <tr *ngIf="!clientes.length"><td colspan="7" class="td-empty">No hay clientes registrados</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </section>
+
+        <section *ngIf="activeView === 'usuarios'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header"><div><h3 class="card-title">Usuarios y roles</h3><p class="card-subtitle">Cuentas administradas por ms-auth y Keycloak</p></div></div>
+                <div class="table-wrap"><table class="admin-table">
+                    <thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Roles</th><th>Estado</th></tr></thead>
+                    <tbody>
+                    <tr *ngFor="let u of usuarios"><td class="td-name">{{ u.username }}</td><td>{{ u.firstName }} {{ u.lastName }}</td><td>{{ u.email }}</td><td>{{ (u.roles || []).join(', ') }}</td><td><span class="badge" [ngClass]="u.enabled ? 'badge-success' : 'badge-danger'">{{ u.enabled ? 'Activo' : 'Inactivo' }}</span></td></tr>
+                    <tr *ngIf="!usuarios.length"><td colspan="5" class="td-empty">No hay usuarios disponibles</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </section>
+
+        <section *ngIf="activeView === 'descuentos'" class="admin-content">
+            <div class="admin-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Descuentos del catálogo</h3>
+                        <p class="card-subtitle">{{ descuentos.length }} registrados en ms-catalogo</p>
+                    </div>
+                    <button class="btn-primary-sm" *ngIf="!soloLectura" (click)="openDescuentoModal()">+ Nuevo descuento</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Descuento</th>
+                            <th>Productos</th>
+                            <th>Desde</th>
+                            <th>Hasta</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let pr of descuentos">
+                            <td class="td-name">{{ pr.codigo }}</td>
+                            <td class="td-desc">{{ pr.descripcion || 'Sin descripción' }}</td>
+                            <td class="td-mono"><span class="tag tag-orange">-{{ pr.porcentaje }}%</span></td>
+                            <td>{{ pr.productos?.length ? pr.productos.join(', ') : 'Sin producto' }}</td>
+                            <td class="td-mono">{{ pr.fechaInicio | date:'dd/MM/yyyy' }}</td>
+                            <td class="td-mono">{{ pr.fechaFin | date:'dd/MM/yyyy' }}</td>
+                            <td class="td-actions">
+                                <button class="btn-icon btn-edit" *ngIf="!soloLectura" (click)="openDescuentoModal(pr)" title="Editar">✏️</button>
+                                <button class="btn-icon btn-del" *ngIf="!soloLectura" (click)="deleteDescuento(pr.id)" title="Eliminar">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!descuentos.length">
+                            <td colspan="7" class="td-empty">No hay descuentos registrados</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Proveedor modal -->
+<div class="modal-overlay" *ngIf="showProveedorModal" (click)="closeProveedorModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>{{ editingProveedor ? 'Editar proveedor' : 'Nuevo proveedor' }}</h3>
+            <button class="modal-close" (click)="closeProveedorModal()">✕</button>
+        </div>
+        <form [formGroup]="proveedorForm" (ngSubmit)="saveProveedor()" class="admin-form">
+            <div class="form-grid-2">
+                <div class="form-field">
+                    <label>Nombres *</label>
+                    <input type="text" formControlName="nombres" placeholder="María"/>
+                    <span class="form-error" *ngIf="proveedorForm.get('nombres')?.touched && proveedorForm.get('nombres')?.invalid">Requerido (mín. 3 caracteres)</span>
+                </div>
+                <div class="form-field">
+                    <label>Apellidos *</label>
+                    <input type="text" formControlName="apellidos" placeholder="Quispe Mamani"/>
+                    <span class="form-error" *ngIf="proveedorForm.get('apellidos')?.touched && proveedorForm.get('apellidos')?.invalid">Requerido</span>
+                </div>
+                <div class="form-field">
+                    <label>DNI *</label>
+                    <input type="text" formControlName="dni" placeholder="12345678" maxlength="8"/>
+                    <span class="form-error" *ngIf="proveedorForm.get('dni')?.touched && proveedorForm.get('dni')?.invalid">8 dígitos requeridos</span>
+                </div>
+                <div class="form-field">
+                    <label>Teléfono *</label>
+                    <input type="text" formControlName="telefono" placeholder="987654321"/>
+                    <span class="form-error" *ngIf="proveedorForm.get('telefono')?.touched && proveedorForm.get('telefono')?.invalid">Requerido</span>
+                </div>
+                <div class="form-field">
+                    <label>Comunidad / Zona *</label>
+                    <input type="text" formControlName="comunidadOZona" placeholder="Acora"/>
+                    <span class="form-error" *ngIf="proveedorForm.get('comunidadOZona')?.touched && proveedorForm.get('comunidadOZona')?.invalid">Requerido</span>
+                </div>
+                <div class="form-field">
+                    <label>Región *</label>
+                    <select formControlName="region">
+                        <option value="">Seleccionar…</option>
+                        <option>Puno</option><option>Cusco</option><option>Arequipa</option>
+                        <option>Apurímac</option><option>Ayacucho</option><option>Otra</option>
+                    </select>
+                    <span class="form-error" *ngIf="proveedorForm.get('region')?.touched && proveedorForm.get('region')?.invalid">Requerido</span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-ghost" (click)="closeProveedorModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">{{ editingProveedor ? 'Guardar cambios' : 'Registrar proveedor' }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lote modal -->
+<div class="modal-overlay" *ngIf="showLoteModal" (click)="closeLoteModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>{{ editingLote ? 'Editar lote' : 'Nuevo lote de compra' }}</h3>
+            <button class="modal-close" (click)="closeLoteModal()">✕</button>
+        </div>
+        <form [formGroup]="loteForm" (ngSubmit)="saveLote()" class="admin-form">
+            <div class="form-grid-2">
+                <div class="form-field">
+                    <label>Artesano *</label>
+                    <select formControlName="idArtesano">
+                        <option value="">Seleccionar…</option>
+                        <option *ngFor="let p of proveedores" [value]="p.idArtesano">
+                            {{ p.nombres ?? p.nombre }} {{ p.apellidos ?? p.apellido }}
+                        </option>
+                    </select>
+                    <span class="form-error" *ngIf="loteForm.get('idArtesano')?.touched && loteForm.get('idArtesano')?.invalid">Requerido</span>
+                </div>
+                <div class="form-field">
+                    <label>Fecha de compra *</label>
+                    <input type="date" formControlName="fechaCompra"/>
+                    <span class="form-error" *ngIf="loteForm.get('fechaCompra')?.touched && loteForm.get('fechaCompra')?.invalid">Requerido</span>
+                </div>
+                <div class="form-field">
+                    <label>Cantidad recibida *</label>
+                    <input type="number" formControlName="cantidadTotalRecibida" min="1"/>
+                    <span class="form-error" *ngIf="loteForm.get('cantidadTotalRecibida')?.touched && loteForm.get('cantidadTotalRecibida')?.invalid">Mín. 1</span>
+                </div>
+                <div class="form-field">
+                    <label>Total pagado (S/) *</label>
+                    <input type="number" formControlName="precioTotalPagado" min="0" step="0.01"/>
+                    <span class="form-error" *ngIf="loteForm.get('precioTotalPagado')?.touched && loteForm.get('precioTotalPagado')?.invalid">Requerido</span>
+                </div>
+                <div class="form-field form-full">
+                    <label>Descripción general</label>
+                    <input type="text" formControlName="descripcionGeneral" placeholder="Ej: Lote chalinas primavera 2026"/>
+                </div>
+                <div class="form-field">
+                    <label>Estado del lote</label>
+                    <select formControlName="estadoLote">
+                        <option value="RECIBIDO">Recibido</option>
+                        <option value="EN_PROCESO">En proceso</option>
+                        <option value="PROCESADO">Procesado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-ghost" (click)="closeLoteModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">{{ editingLote ? 'Guardar cambios' : 'Registrar lote' }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Orden modal -->
+<div class="modal-overlay" *ngIf="showOrdenModal && selectedOrden" (click)="closeOrdenModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Pedido #{{ selectedOrden.idPedido }}</h3>
+            <button class="modal-close" (click)="closeOrdenModal()">✕</button>
+        </div>
+        <div class="orden-detail">
+            <div class="orden-row"><span>Cliente ID:</span><strong>{{ selectedOrden.idCliente }}</strong></div>
+            <div class="orden-row"><span>Fecha:</span><strong>{{ selectedOrden.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+            <div class="orden-row"><span>Total:</span><strong>S/ {{ selectedOrden.totalPagar | number:'1.2-2' }}</strong></div>
+            <div class="orden-row"><span>Estado actual:</span>
+                <strong><span class="badge" [ngClass]="getEstadoBadgeClass(selectedOrden.estadoPedido)">{{ selectedOrden.estadoPedido }}</span></strong>
+            </div>
+        </div>
+        <div class="orden-actions">
+            <p class="form-hint">Cambiar estado:</p>
+            <div class="estado-btn-group" *ngIf="!soloLectura">
+                <button class="btn-estado" (click)="updateEstadoOrden(selectedOrden.idPedido, 'CONFIRMADO')">Confirmar</button>
+                <button class="btn-estado" (click)="updateEstadoOrden(selectedOrden.idPedido, 'ENVIADO')">Marcar enviado</button>
+                <button class="btn-estado btn-estado-success" (click)="updateEstadoOrden(selectedOrden.idPedido, 'ENTREGADO')">Marcar entregado</button>
+                <button class="btn-estado btn-estado-danger" (click)="updateEstadoOrden(selectedOrden.idPedido, 'CANCELADO')">Cancelar pedido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Descuento modal -->
+<div class="modal-overlay" *ngIf="showDescuentoModal" (click)="closeDescuentoModal()">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>{{ editingDescuento ? 'Editar descuento' : 'Nuevo descuento' }}</h3>
+            <button class="modal-close" (click)="closeDescuentoModal()">✕</button>
+        </div>
+        <form [formGroup]="descuentoForm" (ngSubmit)="saveDescuento()" class="admin-form">
+            <div class="form-grid-2">
+                <div class="form-field">
+                    <label>Código *</label>
+                    <input type="text" formControlName="codigo" placeholder="Ej: INVIERNO20"/>
+                </div>
+                <div class="form-field">
+                    <label>Porcentaje *</label>
+                    <input type="number" formControlName="porcentaje" step="1" min="1" max="90"/>
+                </div>
+                <div class="form-field">
+                    <label>Desde *</label>
+                    <input type="date" formControlName="fechaInicio"/>
+                </div>
+                <div class="form-field">
+                    <label>Hasta *</label>
+                    <input type="date" formControlName="fechaFin"/>
+                </div>
+                <div class="form-field form-field-wide">
+                    <label>Descripción</label>
+                    <textarea formControlName="descripcion" rows="2" placeholder="Detalle del descuento"></textarea>
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Productos del catálogo *</label>
+                <div class="producto-check-list" *ngIf="productosPublicados().length; else sinProductos">
+                    <button type="button" class="producto-check" *ngFor="let producto of productosPublicados(); trackBy: trackProducto"
+                            [class.selected]="descuentoMarcado(producto.id)" (click)="toggleProductoDescuento(producto.id)">
+                        <input type="checkbox" [checked]="descuentoMarcado(producto.id)" tabindex="-1">
+                        <img *ngIf="producto.foto" [src]="producto.foto" [alt]="producto.nombre">
+                        <span>{{ producto.nombre }}</span>
+                        <strong>S/ {{ producto.precio | number:'1.2-2' }}</strong>
+                    </button>
+                </div>
+                <ng-template #sinProductos>
+                    <p class="form-hint">No hay productos publicados con precio. Publícalos en Catálogo antes de crear el descuento.</p>
+                </ng-template>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-ghost" (click)="closeDescuentoModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">{{ editingDescuento ? 'Guardar cambios' : 'Crear descuento' }}</button>
+            </div>
+        </form>
+    </div>
+</div>

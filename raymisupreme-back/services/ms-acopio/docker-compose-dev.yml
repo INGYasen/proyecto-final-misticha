@@ -1,0 +1,16 @@
+name: ms-acopio-dev
+
+services:
+  mysql-acopio:
+    image: mysql:8.0
+    container_name: mysql-acopio-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_acopio
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_acopio_dev:/var/lib/mysql
+
+volumes:
+  mysql_acopio_dev:

@@ -1,0 +1,17 @@
+name: ms-inventario-dev
+
+
+services:
+  mysql-inventario:
+    image: mysql:8.0
+    container_name: mysql-inventario-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_inventario
+    ports:
+      - "3317:3306"
+    volumes:
+      - mysql_inventario_dev:/var/lib/mysql
+
+volumes:
+  mysql_inventario_dev:

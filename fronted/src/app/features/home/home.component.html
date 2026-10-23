@@ -1,0 +1,189 @@
+<app-spinner *ngIf="loading"></app-spinner>
+
+<ng-container *ngIf="!loading">
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section class="hero" aria-roledescription="carrusel">
+  <div class="hero__bg">
+    <img
+      *ngFor="let slide of slides; let i = index"
+      [src]="slide.imagen"
+      [alt]="slide.nombre"
+      class="hero__img"
+      [class.is-active]="i === slideIndex"
+      [style.object-position]="slide.encuadre || 'center center'"
+    />
+    <div class="hero__overlay"></div>
+  </div>
+
+  <button type="button" class="hero__arrow hero__arrow--prev" (click)="previousSlide()" aria-label="Imagen anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 18-6-6 6-6"></path></svg>
+  </button>
+  <button type="button" class="hero__arrow hero__arrow--next" (click)="nextSlide()" aria-label="Imagen siguiente">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"></path></svg>
+  </button>
+
+  <div class="hero__content">
+    <div class="hero__text">
+      <p class="hero__eyebrow">Artesanía andina auténtica</p>
+      <h1 class="hero__title">Lleva el<br>alma de<br>nuestra cultura</h1>
+      <p class="hero__desc">
+        Prendas tejidas a mano por artesanas de Puno, Cusco y el Altiplano.
+        Lana de alpaca, tradición milenaria, moda contemporánea.
+      </p>
+      <div class="hero__cta">
+        <a routerLink="/catalogo" class="btn-primary">Ver colección</a>
+        <a routerLink="/" fragment="nosotros" class="btn-outline" style="border-color:white; color:white">Conócenos</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__dots" role="tablist" aria-label="Imágenes de la colección">
+    <button
+      type="button"
+      *ngFor="let slide of slides; let i = index"
+      class="hero__dot"
+      [class.is-active]="i === slideIndex"
+      [attr.aria-label]="slide.nombre"
+      (click)="goToSlide(i)">
+    </button>
+  </div>
+
+  <div class="hero__pattern"></div>
+</section>
+
+<!-- ============================================================
+     CATEGORÍAS
+============================================================ -->
+<section class="section-pad" style="background: var(--color-bg);">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:48px">
+      <p class="section-subtitle">Explora por tipo</p>
+      <h2 class="section-title">Nuestras Categorías</h2>
+    </div>
+
+    <div class="categories-grid">
+      <a
+        *ngFor="let cat of categorias; let i = index"
+        [routerLink]="['/catalogo']"
+        [queryParams]="{categoria: cat.id}"
+        class="category-card"
+      >
+        <div class="category-card__icon">{{ ['🧣','🧶','🧥','🎩'][i % 4] }}</div>
+        <h3>{{ cat.nombre }}</h3>
+        <p>{{ cat.descripcion }}</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRODUCTOS DESTACADOS
+============================================================ -->
+<section class="section-pad" style="background: white;">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:48px">
+      <p class="section-subtitle">Lo más vendido</p>
+      <h2 class="section-title">Prendas Destacadas</h2>
+    </div>
+
+    <div class="products-grid">
+      <div class="product-card" *ngFor="let p of destacados">
+        <a [routerLink]="['/producto', p.id]">
+          <div class="product-card__img-wrap">
+            <img [src]="p.imagen || 'assets/placeholder.jpg'" [alt]="p.nombre" loading="lazy"/>
+            <div class="product-card__overlay">
+              <button class="product-card__action" title="Ver detalle">👁️</button>
+              <button class="product-card__action" title="Agregar al carrito" (click)="addToCart(p); $event.preventDefault()">🛒</button>
+            </div>
+            <span class="product-card__badge promo" *ngIf="enPromo(p)">Promo -{{ porcentajePromo(p) }}%</span>
+            <span class="product-card__badge" *ngIf="p.destacado && !enPromo(p)">Destacado</span>
+            <button
+              type="button"
+              class="product-card__fav"
+              [class.is-saved]="favorites.isSaved(p.id)"
+              (click)="toggleFavorite(p); $event.preventDefault(); $event.stopPropagation()"
+              [attr.aria-label]="favorites.isSaved(p.id) ? 'Quitar de favoritos' : 'Guardar en favoritos'">
+              <svg viewBox="0 0 24 24" [attr.fill]="favorites.isSaved(p.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8">
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+              </svg>
+            </button>
+          </div>
+        </a>
+        <div class="product-card__body">
+          <div class="product-card__name">{{ p.nombre }}</div>
+          <div class="product-card__meta">{{ p.material }} · Talla {{ p.talla }}</div>
+          <div class="product-card__price">
+            <span class="product-card__price-old" *ngIf="enPromo(p)">S/ {{ p.precioBase | number:'1.2-2' }}</span>
+            S/ {{ p.precio | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:48px">
+      <a routerLink="/catalogo" class="btn-outline">Ver todo el catálogo</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BANNER ANDINO / PROMOCIÓN
+============================================================ -->
+<section class="promo-banner" id="nosotros">
+  <div class="promo-banner__bg">
+    <img
+      src="assets/compromiso-machupicchu.jpg"
+      alt="Machu Picchu y una artesana con poncho andino"
+    />
+    <div class="promo-banner__overlay"></div>
+  </div>
+  <div class="container promo-banner__content">
+    <p class="promo-banner__kicker">Compromiso social</p>
+    <h2 class="promo-banner__title">
+      Cada compra apoya a<br>
+      <span>una artesana andina</span>
+    </h2>
+    <p class="promo-banner__text">
+      Trabajamos directamente con comunidades de Puno, Cusco y otras regiones,
+      garantizando comercio justo y preservando las técnicas textiles ancestrales.
+    </p>
+    <a routerLink="/catalogo" class="btn-primary">Comprar ahora →</a>
+  </div>
+</section>
+
+<!-- ============================================================
+     CARACTERÍSTICAS / USPs
+============================================================ -->
+<section class="section-pad-sm features-strip">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-item__icon">🦙</div>
+        <h4>100% Lana de Alpaca</h4>
+        <p>Fibra natural, suave y duradera del Altiplano peruano.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">🤝</div>
+        <h4>Comercio Justo</h4>
+        <p>Precios justos directamente a las artesanas del Ande.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">🚚</div>
+        <h4>Envío a todo Perú</h4>
+        <p>Despachos desde Puno a todo el país en 3-7 días.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">🔒</div>
+        <h4>Pago Seguro</h4>
+        <p>Yape, tarjetas y transferencia bancaria con protección total.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- POPUP DE PROMOCIONES — agregar al home.component.html -->
+<app-promo-popup></app-promo-popup>
+
+</ng-container>

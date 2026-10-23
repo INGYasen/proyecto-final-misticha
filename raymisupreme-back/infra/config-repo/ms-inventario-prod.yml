@@ -1,0 +1,70 @@
+server:
+  port: 8187
+  forward-headers-strategy: framework
+
+spring:
+  servlet:
+    multipart:
+      # Debe coincidir con el limite validado por ImageUploadController.
+      max-file-size: 10MB
+      max-request-size: 11MB
+  datasource:
+    url: jdbc:mysql://${INVENTARIO_DB_HOST}:${INVENTARIO_DB_PORT}/${INVENTARIO_DB_NAME}?useSSL=false&serverTimezone=America/Lima&allowPublicKeyRetrieval=true
+    username: ${INVENTARIO_DB_USERNAME}
+    password: ${INVENTARIO_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  # ── Keycloak JWT validation ────────────────────────────────────────────────
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # ── issuer-uri: ${KEYCLOAK_URL:http://keycloak:8080}/realms/raymisupreme
+          issuer-uri: ${KEYCLOAK_URL:http://keycloak:8080}/realms/raymisupreme-prod
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://registry-server-prod:7081/eureka
+    enabled: true
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,circuitbreakers,circuitbreakerevents
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ms-acopio:
+        sliding-window-size: 5
+        minimum-number-of-calls: 3
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 2

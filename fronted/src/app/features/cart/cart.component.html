@@ -1,0 +1,105 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Mi Carrito</h1>
+    <nav class="breadcrumb">
+      <a routerLink="/">Inicio</a><span>/</span><span>Carrito</span>
+    </nav>
+  </div>
+</div>
+
+<div class="container section-pad">
+
+  <ng-container *ngIf="items.length > 0; else emptyState">
+    <div class="cart-page-grid">
+
+      <!-- TABLA DE ITEMS -->
+      <div class="cart-table">
+        <div class="cart-table__head">
+          <span>Producto</span>
+          <span>Precio</span>
+          <span>Cantidad</span>
+          <span>Subtotal</span>
+          <span></span>
+        </div>
+
+        <div class="cart-row" *ngFor="let item of items">
+          <div class="cart-row__product">
+            <img
+              [src]="item.urlFoto || 'assets/placeholder.jpg'"
+              [alt]="item.nombrePrenda"
+              class="cart-row__img"
+            />
+            <div>
+              <div class="cart-row__name">{{ item.nombrePrenda }}</div>
+              <div class="cart-row__meta" *ngIf="item.talla || item.color">
+                {{ item.talla }} · {{ item.color }}
+              </div>
+            </div>
+          </div>
+
+          <div class="cart-row__price">S/ {{ item.precio | number:'1.2-2' }}</div>
+
+          <div class="qty-control">
+            <button (click)="updateQty(item.prendaId, -1)">−</button>
+            <span>{{ item.cantidad }}</span>
+            <button (click)="updateQty(item.prendaId, 1)">+</button>
+          </div>
+
+          <div class="cart-row__subtotal">
+            S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}
+          </div>
+
+          <button class="cart-row__remove" (click)="remove(item.prendaId)">✕</button>
+        </div>
+
+        <!-- Acciones -->
+        <div class="cart-table__footer">
+          <a routerLink="/catalogo" class="btn-outline">← Seguir comprando</a>
+          <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c" (click)="clearAll()">
+            Vaciar carrito
+          </button>
+        </div>
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="cart-summary">
+        <h3 class="cart-summary__title">Resumen del pedido</h3>
+
+        <div class="cart-summary__row">
+          <span>Subtotal ({{ count }} artículos)</span>
+          <span>S/ {{ total | number:'1.2-2' }}</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Envío</span>
+          <span class="text-oro">Calculado al pagar</span>
+        </div>
+        <div class="cart-summary__divider"></div>
+        <div class="cart-summary__row cart-summary__total">
+          <span>Total estimado</span>
+          <strong>S/ {{ total | number:'1.2-2' }}</strong>
+        </div>
+
+        <button class="btn-primary" style="width:100%; margin-top:20px" (click)="goCheckout()">
+          Proceder al pago
+        </button>
+
+        <div class="cart-summary__note">
+          <p>🔒 Pago seguro con Yape, tarjeta o transferencia</p>
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
+
+  <ng-template #emptyState>
+    <div class="cart-empty-page">
+      <div style="font-size:72px; margin-bottom:24px">🛒</div>
+      <h2>Tu carrito está vacío</h2>
+      <p>Explora nuestra colección de ropa andina hecha a mano.</p>
+      <a routerLink="/catalogo" class="btn-primary" style="margin-top:24px">
+        Ver catálogo
+      </a>
+    </div>
+  </ng-template>
+
+</div>

@@ -1,0 +1,16 @@
+name: ms-ventas-dev
+
+services:
+  mysql-ventas:
+    image: mysql:8.0
+    container_name: mysql-ventas-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_ventas
+    ports:
+      - "3318:3306"
+    volumes:
+      - mysql_ventas_dev:/var/lib/mysql
+
+volumes:
+  mysql_ventas_dev:

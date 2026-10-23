@@ -1,0 +1,82 @@
+{
+    "realm": "raymisupreme-prod",
+    "enabled": true,
+    "displayName": "RaymiSupreme",
+    "registrationAllowed": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": true,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": true,
+    "accessTokenLifespan": 300,
+    "ssoSessionMaxLifespan": 36000,
+    "roles": {
+        "realm": [
+            {
+                "name": "ADMIN",
+                "description": "Administrador del sistema"
+            },
+            {
+                "name": "VENDEDOR",
+                "description": "Personal de control y venta"
+            },
+            {
+                "name": "CLIENTE",
+                "description": "Cliente final"
+            }
+        ]
+    },
+    "clients": [
+        {
+            "clientId": "raymisupreme-app",
+            "name": "RaymiSupreme App",
+            "enabled": true,
+            "publicClient": false,
+            "secret": "raymisupreme-secret-2026",
+            "standardFlowEnabled": true,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": true,
+            "authorizationServicesEnabled": false,
+            "redirectUris": [
+                "http://localhost:7092/*",
+                "http://localhost:8080/*"
+            ],
+            "webOrigins": [
+                "*"
+            ],
+            "protocol": "openid-connect",
+            "defaultClientScopes": [
+                "web-origins",
+                "roles",
+                "profile",
+                "email"
+            ],
+            "protocolMappers": [
+                {
+                    "name": "realm-roles-mapper",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-realm-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "claim.name": "roles",
+                        "jsonType.label": "String",
+                        "multivalued": "true",
+                        "access.token.claim": "true",
+                        "id.token.claim": "true",
+                        "userinfo.token.claim": "true"
+                    }
+                }
+            ]
+        },
+        {
+            "clientId": "ms-auth-admin",
+            "name": "ms-auth Admin Client",
+            "enabled": true,
+            "publicClient": false,
+            "secret": "ms-auth-admin-secret",
+            "standardFlowEnabled": false,
+            "directAccessGrantsEnabled": false,
+            "serviceAccountsEnabled": true
+        }
+    ]
+}

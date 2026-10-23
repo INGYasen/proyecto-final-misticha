@@ -1,0 +1,65 @@
+<div class="success-page">
+  <div class="container">
+    <div class="success-card">
+
+      <div class="success-icon">✅</div>
+      <h1>¡Pedido confirmado!</h1>
+      <p class="success-subtitle">
+        Gracias por tu compra en Raymi Suprême. Tu pedido ha sido registrado exitosamente.
+      </p>
+
+      <div class="success-order-id" *ngIf="pedidoId">
+        Número de pedido: <strong>#{{ pedidoId }}</strong>
+      </div>
+
+      <div class="success-details" *ngIf="pedido">
+        <div class="success-detail-row">
+          <span>Estado</span>
+          <span class="status-badge">{{ pedido.estadoPedido }}</span>
+        </div>
+        <div class="success-detail-row">
+          <span>Total pagado</span>
+          <strong>S/ {{ pedido.totalPagar | number:'1.2-2' }}</strong>
+        </div>
+        <div class="success-detail-row">
+          <span>Fecha</span>
+          <span>{{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <!-- Steps de qué sigue -->
+      <div class="success-next">
+        <h3>¿Qué sigue?</h3>
+        <div class="success-steps">
+          <div class="success-step">
+            <div class="ss-num">1</div>
+            <div>
+              <strong>Confirmación por correo</strong>
+              <p>Recibirás los detalles de tu pedido en tu email.</p>
+            </div>
+          </div>
+          <div class="success-step">
+            <div class="ss-num">2</div>
+            <div>
+              <strong>Preparación</strong>
+              <p>Nuestras artesanas prepararán tu prenda con todo el cuidado.</p>
+            </div>
+          </div>
+          <div class="success-step">
+            <div class="ss-num">3</div>
+            <div>
+              <strong>Envío</strong>
+              <p>Tu pedido llegará en 3-7 días hábiles según tu ubicación.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <a routerLink="/mis-pedidos" class="btn-primary">Ver mis pedidos</a>
+        <a routerLink="/catalogo" class="btn-outline">Seguir comprando</a>
+      </div>
+
+    </div>
+  </div>
+</div>

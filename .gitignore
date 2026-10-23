@@ -1,0 +1,42 @@
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IDE
+.idea/
+.vscode/
+
+# Angular / Node
+fronted/node_modules/
+fronted/dist/
+fronted/.angular/
+fronted/.env
+fronted/.env.*
+
+# Spring Boot / Maven
+raymisupreme-back/**/target/
+raymisupreme-back/**/.classpath
+raymisupreme-back/**/.project
+raymisupreme-back/**/.settings/
+raymisupreme-back/**/logs/
+raymisupreme-back/**/*.log
+
+# Docker / logs
+logs/
+*.log
+
+# Informe de sesion y evidencias: no van al repositorio
+docs/sesiones/
+*.pdf
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+**/application-local.yml
+**/application-secret.yml
+
+# Basura local
+.run/
+*.ndjson

@@ -1,0 +1,275 @@
+name: raymisupreme-infra-prod
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ENTORNO PROD
+# Levanta: TODO — infra, keycloak, DBs y todos los microservicios
+# Comando: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ─── INFRAESTRUCTURA CORE ──────────────────────────────────────────────────
+
+  config-server:
+    container_name: config-server-prod
+    ports:
+      - "7072:7071"
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+    healthcheck:
+      start_period: 60s
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:7071/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  registry-server:
+    container_name: registry-server-prod
+    ports:
+      - "7082:7081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+  gateway:
+    container_name: gateway-prod
+    ports:
+      - "7092:7091"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      keycloak:
+        condition: service_started
+
+  # ─── KEYCLOAK ──────────────────────────────────────────────────────────────
+
+  keycloak:
+    container_name: keycloak-prod
+    ports:
+      - "9090:8080"
+
+  # ─── BASES DE DATOS ────────────────────────────────────────────────────────
+
+  mysql-acopio:
+    container_name: mysql-acopio-prod
+    ports:
+      - "3306:3306"
+
+  mysql-inventario:
+    container_name: mysql-inventario-prod
+    ports:
+      - "3307:3306"
+
+  mysql-ventas:
+    container_name: mysql-ventas-prod
+    ports:
+      - "3308:3306"
+
+  mysql-catalogo:
+    container_name: mysql-catalogo-prod
+    ports:
+      - "3309:3306"
+
+  mysql-pagos:
+    container_name: mysql-pagos-prod
+    ports:
+      - "3311:3306"
+
+  mysql-carrito:
+    container_name: mysql-carrito-prod
+    ports:
+      - "3312:3306"
+
+  # ─── MICROSERVICIOS ────────────────────────────────────────────────────────
+
+  ms-acopio:
+    build:
+      context: ../services/ms-acopio
+      dockerfile: Dockerfile
+    container_name: ms-acopio
+    restart: unless-stopped
+    ports:
+      - "8186:8186"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      ACOPIO_DB_HOST: mysql-acopio
+      ACOPIO_DB_PORT: 3306
+      ACOPIO_DB_NAME: ${ACOPIO_DB_NAME}
+      ACOPIO_DB_USERNAME: root
+      ACOPIO_DB_PASSWORD: ${ACOPIO_DB_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      mysql-acopio:
+        condition: service_healthy
+    networks:
+      - ms-net
+
+  ms-inventario:
+    build:
+      context: ../services/ms-inventario
+      dockerfile: Dockerfile
+    container_name: ms-inventario
+    restart: unless-stopped
+    ports:
+      - "8187:8187"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      INVENTARIO_DB_HOST: mysql-inventario
+      INVENTARIO_DB_PORT: 3306
+      INVENTARIO_DB_NAME: ${INVENTARIO_DB_NAME}
+      INVENTARIO_DB_USERNAME: root
+      INVENTARIO_DB_PASSWORD: ${INVENTARIO_DB_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      mysql-inventario:
+        condition: service_healthy
+    networks:
+      - ms-net
+
+  ms-ventas:
+    build:
+      context: ../services/ms-ventas
+      dockerfile: Dockerfile
+    container_name: ms-ventas
+    restart: unless-stopped
+    ports:
+      - "8188:8188"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      VENTAS_DB_HOST: mysql-ventas
+      VENTAS_DB_PORT: 3306
+      VENTAS_DB_NAME: ${VENTAS_DB_NAME}
+      VENTAS_DB_USERNAME: root
+      VENTAS_DB_PASSWORD: ${VENTAS_DB_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      mysql-ventas:
+        condition: service_healthy
+    networks:
+      - ms-net
+
+  ms-auth:
+    build:
+      context: ../services/ms-auth
+      dockerfile: Dockerfile
+    container_name: ms-auth
+    restart: unless-stopped
+    ports:
+      - "8189:8189"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    networks:
+      - ms-net
+
+  ms-catalogo:
+    build:
+      context: ../services/ms-catalogo
+      dockerfile: Dockerfile
+    container_name: ms-catalogo
+    restart: unless-stopped
+    ports:
+      - "8190:8190"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      CATALOGO_DB_HOST: mysql-catalogo
+      CATALOGO_DB_PORT: 3306
+      CATALOGO_DB_NAME: ${CATALOGO_DB_NAME}
+      CATALOGO_DB_USERNAME: root
+      CATALOGO_DB_PASSWORD: ${CATALOGO_DB_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      mysql-catalogo:
+        condition: service_healthy
+    networks:
+      - ms-net
+
+  ms-pagos:
+    build:
+      context: ../services/ms-pagos
+      dockerfile: Dockerfile
+    container_name: ms-pagos
+    restart: unless-stopped
+    ports:
+      - "8192:8192"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      PAGOS_DB_HOST: mysql-pagos
+      PAGOS_DB_PORT: 3306
+      PAGOS_DB_NAME: ${PAGOS_DB_NAME}
+      PAGOS_DB_USERNAME: root
+      PAGOS_DB_PASSWORD: ${PAGOS_DB_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      mysql-pagos:
+        condition: service_healthy
+    networks:
+      - ms-net
+
+  ms-carrito:
+    build:
+      context: ../services/ms-carrito
+      dockerfile: Dockerfile
+    container_name: ms-carrito
+    restart: unless-stopped
+    ports:
+      - "8193:8193"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:7071
+      CARRITO_DB_HOST: mysql-carrito
+      CARRITO_DB_PORT: 3306
+      CARRITO_DB_NAME: ${CARRITO_DB_NAME}
+      CARRITO_DB_USERNAME: root
+      CARRITO_DB_PASSWORD: ${CARRITO_DB_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      registry-server:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      mysql-carrito:
+        condition: service_healthy
+    networks:
+      - ms-net
