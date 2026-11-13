@@ -42,8 +42,14 @@ public class PedidoServiceImpl implements PedidoService {
 
     private static final String ESTADO_PENDIENTE = "PENDIENTE";
     private static final String ESTADO_PAGADO = "PAGADO";
+    private static final String ESTADO_CONFIRMADO = "CONFIRMADO";
+    private static final String ESTADO_ENVIADO = "ENVIADO";
+    private static final String ESTADO_ENTREGADO = "ENTREGADO";
     private static final String ESTADO_CANCELADO = "CANCELADO";
     private static final String PAGO_EXITOSO = "EXITOSO";
+    private static final java.util.Set<String> ESTADOS_ADMIN = java.util.Set.of(
+            ESTADO_PENDIENTE, ESTADO_PAGADO, ESTADO_CONFIRMADO,
+            ESTADO_ENVIADO, ESTADO_ENTREGADO, ESTADO_CANCELADO);
 
     private final PedidoRepository pedidoRepository;
     private final DetallePedidoRepository detallePedidoRepository;
@@ -71,7 +77,25 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     public PedidoResponse crear(PedidoRequest request) {
+        if (request == null || request.getIdCliente() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idCliente es obligatorio");
+        }
+        ClienteEntity cliente = clienteRepository.findById(request.getIdCliente())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cliente no encontrado: " + request.getIdCliente()));
+
         PedidoEntity entity = PedidoMapper.toEntity(request);
+        entity.setCliente(cliente);
+        if (entity.getFechaPedido() == null) {
+            entity.setFechaPedido(LocalDateTime.now());
+        }
+        if (entity.getEstadoPedido() == null || entity.getEstadoPedido().isBlank()) {
+            entity.setEstadoPedido(ESTADO_PENDIENTE);
+        }
+        if (entity.getTotalPagar() == null) {
+            entity.setTotalPagar(BigDecimal.ZERO);
+        }
+
         PedidoEntity guardado = pedidoRepository.save(entity);
         PedidoResponse respuesta = PedidoMapper.toResponse(guardado);
         pedidoEventoPublisher.pedidoCreado(respuesta);
@@ -143,6 +167,23 @@ public class PedidoServiceImpl implements PedidoService {
         PedidoMapper.copyToEntity(request, entity);
         PedidoEntity actualizado = pedidoRepository.save(entity);
         return PedidoMapper.toResponse(actualizado);
+    }
+
+    @Override
+    public PedidoResponse actualizarEstado(Long idPedido, String estadoPedido) {
+        if (estadoPedido == null || estadoPedido.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "estadoPedido es obligatorio");
+        }
+        String estado = estadoPedido.trim().toUpperCase();
+        if (!ESTADOS_ADMIN.contains(estado)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Estado no permitido: " + estado);
+        }
+        PedidoEntity pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Pedido no encontrado: " + idPedido));
+        pedido.setEstadoPedido(estado);
+        return PedidoMapper.toResponse(pedidoRepository.save(pedido));
     }
 
     @Override

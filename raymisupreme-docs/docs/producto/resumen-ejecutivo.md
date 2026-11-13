@@ -1,35 +1,14 @@
-# Resumen Ejecutivo
+# Resumen ejecutivo
 
-## Descripción general
+Raymi Suprême es la tienda del equipo 12: prendas andinas (alpaca, taller de Puno/Cusco) vendidas por microservicios. El lote entra por acopio, pasa a inventario, se publica en catálogo y se cobra con Mercado Pago.
 
-**RaymiSupreme** es una plataforma distribuida orientada a la gestión y comercialización de prendas textiles artesanales peruanas bajo la marca **Raymi Suprême**.
+## Qué cubre
 
-El proyecto busca atender una problemática frecuente del sector artesanal: la producción se encuentra dispersa, muchos artesanos trabajan de manera independiente y existen dificultades para controlar el origen, la calidad, el inventario y la comercialización de sus productos.
+Acopio (artesano y lote), inventario y calidad, catálogo con precios, carrito, pedidos, cobro, login con roles y Grafana.
 
-La plataforma centraliza el proceso desde la recepción de prendas o lotes provenientes de artesanos hasta la publicación de los productos en un catálogo y su posterior venta.
+## Solución
 
-> **RaymiSupreme conecta la producción artesanal peruana con un modelo de comercialización digital, organizado y escalable.**
-
-## Propósito del proyecto
-
-El propósito de RaymiSupreme es proporcionar una base tecnológica que permita:
-
-- Registrar artesanos y lotes de productos adquiridos.
-- Mantener la trazabilidad entre el artesano, el lote y la prenda.
-- Clasificar las prendas por categoría, talla, color y material.
-- Registrar inspecciones de calidad.
-- Controlar el inventario y el stock disponible.
-- Publicar productos en un catálogo digital.
-- Administrar precios, descuentos y productos destacados.
-- Gestionar clientes y carritos de compra.
-- Crear, confirmar o cancelar pedidos.
-- Registrar pagos y generar comprobantes.
-- Proteger las operaciones mediante usuarios, roles y permisos.
-- Supervisar el funcionamiento de la plataforma mediante métricas y logs.
-
-## Solución implementada
-
-RaymiSupreme está construido con una arquitectura de microservicios. Cada área del negocio se encuentra separada en un servicio especializado:
+Cada área es un microservicio:
 
 | Componente | Responsabilidad |
 |---|---|
@@ -39,18 +18,16 @@ RaymiSupreme está construido con una arquitectura de microservicios. Cada área
 | `ms-catalogo` | Publicación de productos, precios y descuentos |
 | `ms-carrito` | Administración del carrito de compra |
 | `ms-ventas` | Gestión de clientes, pedidos y proceso de checkout |
-| `ms-pagos` | Registro de pagos y comprobantes |
+| `ms-pagos` | Mercado Pago y comprobantes |
 | API Gateway | Punto único de acceso a los servicios |
 | Eureka Server | Registro y descubrimiento de microservicios |
 | Config Server | Configuración centralizada |
 | Keycloak | Autenticación y autorización |
 | Prometheus, Loki y Grafana | Métricas, logs y visualización operativa |
 
-Cada microservicio mantiene su propia responsabilidad y persistencia. La comunicación interna se realiza mediante APIs REST y clientes Feign, incorporando mecanismos de tolerancia a fallos.
+Cada servicio tiene su MySQL. Entre ellos se hablan por Feign. Resilience4j cubre el circuit breaker.
 
-## Flujo principal del negocio
-
-El flujo funcional implementado es el siguiente:
+## Flujo
 
 1. Se registra al artesano.
 2. Se registra el lote recibido o adquirido.
@@ -59,38 +36,18 @@ El flujo funcional implementado es el siguiente:
 5. Las prendas aprobadas se publican en el catálogo.
 6. Se asignan precios y descuentos.
 7. El cliente agrega productos a su carrito.
-8. El carrito se convierte en un pedido pendiente.
-9. Un usuario autorizado confirma o cancela el pedido.
-10. Al confirmar el pedido, se registra el pago.
-11. El stock del inventario se actualiza.
-12. El cliente puede consultar la información de su compra.
+8. El carrito se convierte en un pedido `PENDIENTE`.
+9. El cliente paga con Mercado Pago (Checkout Pro o Brick).
+10. El webhook confirma el cobro y el pedido pasa a `PAGADO`.
+11. Recién ahí se descuenta el stock.
+12. El cliente ve su pedido en la tienda. El admin puede seguir el estado (confirmado, enviado, entregado).
 
 ## Seguridad
 
-La seguridad de la plataforma se gestiona con **Keycloak**, **OAuth 2.0** y tokens **JWT**.
-
-Los principales roles definidos son:
-
-- `CLIENTE`
-- `VENDEDORA`
-- `SUPER_ADMIN`
-
-El catálogo puede consultarse públicamente, mientras que las operaciones administrativas y de compra requieren autenticación. Los permisos más sensibles se reservan para el rol `SUPER_ADMIN`.
-
-## Valor aportado
-
-RaymiSupreme aporta valor al permitir:
-
-- Organizar información que normalmente se encuentra dispersa.
-- Conservar el origen de las prendas mediante su relación con lotes y artesanos.
-- Mejorar el control de calidad y stock.
-- Facilitar la publicación digital de productos artesanales.
-- Centralizar el proceso comercial.
-- Separar las responsabilidades mediante microservicios.
-- Preparar la plataforma para su crecimiento y evolución futura.
+Keycloak, OAuth 2.0 y JWT. Roles: `CLIENTE`, `VENDEDORA`, `SUPER_ADMIN`. El catálogo se ve sin cuenta. Comprar y el admin piden token.
 
 ## Estado actual
 
-La implementación actual cubre principalmente el **backend de la plataforma**, sus APIs, persistencia, seguridad, comunicación entre microservicios y observabilidad.
+Hay tienda Angular, microservicios, Keycloak y cobro con Mercado Pago. El admin ve pedidos, catálogo e inventario. Grafana tiene el dashboard de instancias.
 
-La tienda web pública, la integración con una pasarela bancaria real y la logística internacional completa se consideran extensiones futuras del producto.
+Stripe no es el cobro principal. El envío internacional no está modelado: el despacho es local, desde Puno.

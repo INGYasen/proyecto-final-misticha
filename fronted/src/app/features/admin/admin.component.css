@@ -623,9 +623,18 @@
     width: 100%;
     background: var(--clr-accent);
     border-radius: 4px 4px 0 0;
-    min-height: 4px;
+    min-height: 0;
     opacity: .85;
     transition: height .3s ease;
+}
+
+.bar-fill:not(.is-empty) { min-height: 10px; }
+
+.bar-amount {
+    font-size: 10px;
+    color: var(--clr-text);
+    font-weight: 600;
+    line-height: 1;
 }
 
 .bar-label {

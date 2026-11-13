@@ -144,7 +144,7 @@
                     <div class="kpi-icon kpi-mint">▣</div>
                     <div class="kpi-body">
                         <span class="kpi-value">{{ metrics.pagosConfirmados }}</span>
-                        <span class="kpi-label">Pagos confirmados</span>
+                        <span class="kpi-label">{{ soloLectura ? 'Pedidos cobrados' : 'Pagos confirmados' }}</span>
                     </div>
                 </div>
                 <div class="kpi-card">
@@ -162,12 +162,13 @@
                 <!-- Ingresos semanales -->
                 <div class="admin-card chart-card">
                     <div class="card-header">
-                        <h3 class="card-title">Ingresos últimos 7 días</h3>
+                        <h3 class="card-title">Ingresos cobrados, últimos 8 días</h3>
                     </div>
                     <div class="bar-chart">
                         <div class="bar-chart-bars">
                             <div class="bar-col" *ngFor="let val of metrics.ingresosSemanales; let i = index">
-                                <div class="bar-fill" [style.height.%]="chartBarHeight(val)"></div>
+                                <span class="bar-amount" *ngIf="val > 0">{{ val | number:'1.0-0' }}</span>
+                                <div class="bar-fill" [class.is-empty]="val <= 0" [style.height.%]="chartBarHeight(val)"></div>
                                 <span class="bar-label">{{ chartDays[i] }}</span>
                             </div>
                         </div>
@@ -259,7 +260,7 @@
                         <tbody>
                         <tr *ngFor="let o of ordenesRecientes">
                             <td class="td-mono">#{{ o.idPedido }}</td>
-                            <td>{{ o.nombreCliente || ('Cliente #' + o.idCliente) }}</td>
+                            <td>{{ nombreDeCliente(o) }}</td>
                             <td>{{ o.fechaPedido | date:'dd/MM/yyyy' }}</td>
                             <td>S/ {{ o.totalPagar | number:'1.2-2' }}</td>
                             <td><span class="badge" [ngClass]="getEstadoBadgeClass(o.estadoPedido)">{{ o.estadoPedido }}</span></td>
@@ -957,14 +958,14 @@
             <button class="modal-close" (click)="closeOrdenModal()">✕</button>
         </div>
         <div class="orden-detail">
-            <div class="orden-row"><span>Cliente ID:</span><strong>{{ selectedOrden.idCliente }}</strong></div>
+            <div class="orden-row"><span>Cliente:</span><strong>{{ nombreDeCliente(selectedOrden) }}</strong></div>
             <div class="orden-row"><span>Fecha:</span><strong>{{ selectedOrden.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</strong></div>
             <div class="orden-row"><span>Total:</span><strong>S/ {{ selectedOrden.totalPagar | number:'1.2-2' }}</strong></div>
             <div class="orden-row"><span>Estado actual:</span>
                 <strong><span class="badge" [ngClass]="getEstadoBadgeClass(selectedOrden.estadoPedido)">{{ selectedOrden.estadoPedido }}</span></strong>
             </div>
         </div>
-        <div class="orden-actions">
+        <div class="orden-actions" *ngIf="!soloLectura">
             <p class="form-hint">Cambiar estado:</p>
             <div class="estado-btn-group" *ngIf="!soloLectura">
                 <button class="btn-estado" (click)="updateEstadoOrden(selectedOrden.idPedido, 'CONFIRMADO')">Confirmar</button>

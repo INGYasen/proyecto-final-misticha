@@ -250,6 +250,49 @@
   opacity: 0.6; cursor: not-allowed; transform: none;
 }
 
+.co-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px 22px;
+  background: transparent;
+  color: var(--color-noche);
+  font-family: var(--font-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid rgba(201, 146, 42, 0.55);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.co-btn-secondary:hover:not(:disabled) {
+  background: rgba(201, 146, 42, 0.08);
+  border-color: var(--color-oro);
+}
+
+.co-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.yape-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-gray-1);
+}
+
+.yape-panel .co-btn-primary {
+  width: 100%;
+  justify-content: center;
+}
+
 .co-btn-confirm { font-size: 14px; padding: 14px 32px; }
 
 .co-btn-outline {

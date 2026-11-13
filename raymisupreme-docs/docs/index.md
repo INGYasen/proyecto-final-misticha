@@ -1,38 +1,29 @@
-# Documentación Técnica - Raymi Suprême
+# Raymi Suprême — docs
 
-## Resumen general
+Equipo 12, DIST 2026-2. Tienda de prendas andinas (alpaca y taller). El front es Angular. Al backend se entra solo por el API Gateway.
 
-Raymi Suprême es una plataforma e-commerce distribuida orientada a la comercialización de prendas artesanales peruanas. El sistema está diseñado bajo una arquitectura de microservicios, permitiendo separar responsabilidades como catálogo, inventario, carrito, ventas, pagos, seguridad y monitoreo.
+Acá está la arquitectura, los microservicios, cómo se levanta en local y cómo se prueba.
 
-Esta documentación está organizada como una entrega técnica para una empresa real. Su objetivo es explicar la visión del producto, la arquitectura del sistema, los microservicios implementados, la base de datos, la seguridad, las APIs, el proceso de instalación, las pruebas realizadas y las evidencias finales del proyecto.
-
-## Tecnologías principales
+## Stack
 
 | Tecnología | Uso |
 |---|---|
-| Spring Boot | Desarrollo de microservicios |
-| Spring Cloud Gateway | Punto único de entrada |
-| Eureka Server | Descubrimiento de servicios |
-| OpenFeign | Comunicación entre microservicios |
-| Resilience4j | Tolerancia a fallos |
-| Keycloak | Seguridad y autenticación |
-| MySQL | Persistencia de datos |
-| Docker | Contenedores |
-| Prometheus | Métricas |
-| Grafana | Dashboards de monitoreo |
-| Postman | Pruebas de APIs |
+| Spring Boot 3.5 | Microservicios |
+| Spring Cloud Gateway | Entrada única |
+| Eureka | Descubrimiento |
+| OpenFeign | Llamadas entre servicios |
+| Resilience4j | Circuit breaker |
+| Keycloak 25 | Login y roles |
+| MySQL 8 | Una base por servicio |
+| Kafka | Topic `pedidos` |
+| Angular 17 | Tienda |
+| Mercado Pago | Cobro |
+| Prometheus / Grafana / Loki | Métricas, dashboards y logs |
 
-## Módulos principales
+## Carpetas del repo
 
-- Gestión de artesanos y acopio.
-- Gestión de inventario.
-- Gestión del catálogo comercial.
-- Gestión del carrito de compras.
-- Gestión de ventas.
-- Gestión de pagos.
-- Seguridad con autenticación y roles.
-- Observabilidad con métricas y dashboards.
+- `fronted/` — la tienda (el nombre de la carpeta quedó así)
+- `raymisupreme-back/` — infra, servicios y observabilidad
+- `raymisupreme-docs/` — esta documentación
 
-## Objetivo de la documentación
-
-Permitir que un evaluador técnico, desarrollador o administrador pueda comprender, ejecutar, probar y mantener el sistema Raymi Suprême.
+El flujo de compra: catálogo → carrito (también como invitado) → checkout → pedido `PENDIENTE` → Mercado Pago → `PAGADO`. El stock no baja hasta que el pago queda aprobado.

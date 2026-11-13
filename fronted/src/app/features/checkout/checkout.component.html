@@ -1,6 +1,6 @@
 <!-- ================================================================
      CHECKOUT — RAYMI SUPRÊME
-     Steps: 1=Datos | 2=Pago seguro con Stripe | 3=Boleta
+     Steps: 1=Datos | 2=Pago seguro con Mercado Pago (tarjeta/Yape) | 3=Boleta
 ================================================================ -->
 
 <!-- STEPS 1-2: Header con stepper -->
@@ -169,6 +169,10 @@
         <button type="submit" class="co-btn-primary" [disabled]="yapeLoading">
           {{ yapeLoading ? 'Procesando Yape…' : 'Pagar con Yape' }}
         </button>
+        <button type="button" class="co-btn-secondary" [disabled]="yapeLoading" (click)="pagarConCheckoutPro()">
+          Pagar en Mercado Pago
+        </button>
+        <p class="yape-hint">Si Yape directo falla, usa “Pagar en Mercado Pago” (tarjeta o Yape en su sitio seguro).</p>
       </form>
 
       <div class="mp-brick-wrapper">

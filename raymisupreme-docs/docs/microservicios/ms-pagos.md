@@ -1,33 +1,30 @@
-# Microservicio de Pagos
+# ms-pagos
 
-`ms-pagos` administra los pagos asociados a los pedidos creados por `ms-ventas`.
+`ms-pagos` cobra los pedidos que crea `ms-ventas`. El cobro real va por Mercado Pago. Stripe quedó como fallback y no es el camino que usa la tienda.
 
-## Responsabilidades
+## Qué hace
 
-- Procesar un pago.
-- Asociarlo con un pedido y un cliente.
-- Registrar el monto y método de pago.
-- Mantener el estado del pago.
-- Generar comprobantes.
-- Consultar pagos por pedido.
+- Arma la preferencia de Mercado Pago (Checkout Pro)
+- Recibe el pago del Brick (tarjeta / Yape) cuando está habilitado
+- Escucha el webhook y deja el pago en `CONFIRMADO`
+- Avisa a `ms-ventas` para pasar el pedido a `PAGADO`
+- Guarda el comprobante
 
-## Recursos principales
+## Rutas que importan
 
 | Recurso | Ruta |
 |---|---|
-| Pagos | `/api/v1/pagos` |
-| Procesar pago | `/api/v1/pagos/procesar` |
-| Pago por pedido | `/api/v1/pagos/pedido/{idPedido}` |
+| Preferencia Checkout Pro | `POST /api/v1/pagos/mercadopago/preferencia` |
+| Pago Brick | `POST /api/v1/pagos/mercadopago/payment` |
+| Webhook | `POST /api/v1/pagos/mercadopago/webhook` |
+| Pago por pedido | `GET /api/v1/pagos/pedido/{idPedido}` |
 | Comprobantes | `/api/pagos/comprobantes` |
 
 ## Flujo
 
+1. El checkout crea el pedido en `PENDIENTE`.
+2. `ms-pagos` pide a Mercado Pago la preferencia o registra el pago del Brick.
+3. Si Mercado Pago aprueba, el webhook (o la confirmación) deja el pago en `CONFIRMADO`.
+4. `ms-ventas` pasa el pedido a `PAGADO` y recién ahí se descuenta stock.
 
-ms-ventas → ms-pagos → Registro del pago
-
-En el flujo normal, el pago no se crea manualmente. ms-ventas solicita su procesamiento cuando el pedido pendiente es confirmado.
-Si el pago se registra correctamente:
-<p> Pago = EXITOSO<br>
-Pedido = PAGADO</p>
-Stock = ACTUALIZADO
-La implementación actual simula el registro del pago y no está conectada a una pasarela bancaria real.
+El access token no va en el código: `ms-pagos` lo lee de `MP_ACCESS_TOKEN`. La llave pública de la tienda está en `fronted/src/environments/environment.ts`.

@@ -14,6 +14,7 @@ public interface PedidoService {
     List<PedidoResponse> listarDelUsuario(String keycloakUserId, String email);
     void verificarPropietario(Long idPedido, String keycloakUserId, String email);
     PedidoResponse actualizar(Long idPedido, PedidoRequest request);
+    PedidoResponse actualizarEstado(Long idPedido, String estadoPedido);
     PedidoResponse confirmarPedido(Long idPedido, ConfirmarPedidoRequest request);
     PedidoResponse confirmarPagoMercadoPago(Long idPedido);
     PedidoResponse cancelarPedido(Long idPedido);

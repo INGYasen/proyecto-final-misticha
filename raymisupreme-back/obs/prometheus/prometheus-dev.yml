@@ -8,6 +8,12 @@ scrape_configs:
       - targets:
           - localhost:9090
 
+  - job_name: keycloak-dev
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - keycloak-dev:9000
+
   - job_name: config-server-dev
     metrics_path: /actuator/prometheus
     static_configs:

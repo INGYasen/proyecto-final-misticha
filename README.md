@@ -121,6 +121,19 @@ npm start
 
 http://localhost:4200
 
+Si se cierra Cursor, Maven se cae. Para levantar todo en ventanas PowerShell aparte, desde la raíz del repo:
+
+```powershell
+.\levantar-stack-independiente.ps1
+.\chequear-stack.ps1
+```
+
+JWT sin token / con token (401 y 200):
+
+```powershell
+.\demo-jwt-401-200.ps1
+```
+
 Comprobación rápida: http://localhost:7091/actuator/health debe responder `UP`, y en el navegador el botón Entrar debe redirigir a Keycloak con `client_id=raymisupreme-spa` y `code_challenge_method=S256`.
 
 ## Producción (Docker)

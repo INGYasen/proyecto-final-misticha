@@ -1,6 +1,6 @@
-# Arquitectura General
+# Arquitectura general
 
-RaymiSupreme utiliza una **arquitectura de microservicios**, donde cada servicio se encarga de una parte específica del negocio.
+Cada parte del negocio es un servicio. El corte C1–C4 está en [Modelo C4](modelo-c4.md).
 
 ## Componentes principales
 

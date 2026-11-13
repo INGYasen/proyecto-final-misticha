@@ -27,7 +27,8 @@ internal:
   payment-secret: ${INTERNAL_PAYMENT_SECRET:raymisupreme-local-payment-secret}
 
 stripe:
-  secret-key: ${STRIPE_SECRET_KEY}
+  # Placeholder local si no hay STRIPE_SECRET_KEY de usuario; Mercado Pago sigue siendo el flujo principal.
+  secret-key: ${STRIPE_SECRET_KEY:sk_test_local_placeholder}
   currency: pen
   success-url: http://localhost:4200/checkout/success?session_id={CHECKOUT_SESSION_ID}
   cancel-url: http://localhost:4200/checkout/cancel

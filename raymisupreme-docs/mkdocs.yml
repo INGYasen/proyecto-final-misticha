@@ -1,6 +1,6 @@
-site_name: Documentación Técnica - Raymi Suprême
-site_description: Documentación técnica, operativa y funcional del sistema e-commerce distribuido Raymi Suprême
-site_author: Equipo Raymi Suprême
+site_name: Raymi Suprême
+site_description: Docs del equipo 12 — DIST 2026-2
+site_author: Equipo 12
 
 theme:
   name: material
@@ -34,6 +34,7 @@ nav:
 
   - Arquitectura del Sistema:
       - Arquitectura General: arquitectura/arquitectura-general.md
+      - Modelo C4: arquitectura/modelo-c4.md
       - Diagrama de Microservicios: arquitectura/diagrama-microservicios.md
       - Flujo End-to-End de Compra: arquitectura/flujo-compra.md
       - Comunicación entre Microservicios: arquitectura/comunicacion-microservicios.md

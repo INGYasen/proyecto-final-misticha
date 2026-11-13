@@ -1,7 +1,4 @@
-
-
-La arquitectura general de Raymi Suprême se organiza en bloques.  
-El acceso externo ingresa por el `API Gateway`, que centraliza las solicitudes del frontend y las redirige hacia los microservicios de negocio.
+El front entra por el Gateway y de ahí a cada `ms-*`. Los dibujos C1–C4 están en [Modelo C4](modelo-c4.md).
 
 ```mermaid
 flowchart TB

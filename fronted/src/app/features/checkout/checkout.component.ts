@@ -279,10 +279,44 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 payer: { email },
             });
         } catch (error: any) {
-            if (!(error instanceof HttpErrorResponse)) {
-                const detalle = error?.message || error?.cause?.[0]?.description || 'No se pudo crear el pago con Yape.';
-                this.toast.show(String(detalle), 'error');
+            if (error instanceof HttpErrorResponse) return;
+            const detalle = String(
+                error?.message || error?.cause?.[0]?.description || 'No se pudo crear el pago con Yape.'
+            );
+            // Cuenta personal / Yape online no habilitado: Checkout Pro sí responde.
+            if (/collector/i.test(detalle)) {
+                this.toast.show('Yape directo no está disponible ahora. Te pasamos al checkout de Mercado Pago.', 'info');
+                await this.pagarConCheckoutPro();
+                return;
             }
+            this.toast.show(detalle, 'error');
+        } finally {
+            this.yapeLoading = false;
+            this.cdr.detectChanges();
+        }
+    }
+
+    // Checkout Pro: preferencia y redirect a Mercado Pago.
+    async pagarConCheckoutPro(): Promise<void> {
+        if (this.yapeLoading) return;
+        this.yapeLoading = true;
+        try {
+            await this.prepararPedido();
+            if (!this.pedidoId) throw new Error('Pedido no preparado');
+            const pref = await firstValueFrom(this.order.crearPreferenciaMercadoPago(this.pedidoId));
+            if (!pref?.initPoint) {
+                this.toast.show('No se pudo abrir Mercado Pago. Inténtalo de nuevo.', 'error');
+                return;
+            }
+            this.pagoConfirmado = true;
+            this.cart.clearCart();
+            window.location.href = pref.initPoint;
+        } catch (error) {
+            console.error('Checkout Pro Mercado Pago:', error);
+            const httpError = error as HttpErrorResponse;
+            const backend = httpError?.error;
+            const detail = backend?.error || backend?.message || httpError?.message || 'No se pudo iniciar el pago.';
+            this.toast.show(`Mercado Pago: ${detail}`, 'error');
         } finally {
             this.yapeLoading = false;
             this.cdr.detectChanges();

@@ -109,6 +109,10 @@ public class SecurityConfig {
                                 "/api/pagos/mercadopago/preferencia").authenticated()
                         .pathMatchers(HttpMethod.POST, "/api/v1/pagos/stripe/checkout-session").authenticated()
                         .pathMatchers(HttpMethod.GET, "/api/v1/pagos/stripe/session/**").authenticated()
+                        // El cliente autenticado consulta el pago de su propio pedido (ms-pagos valida dueño).
+                        .pathMatchers(HttpMethod.GET,
+                                "/api/v1/pagos/pedido/**",
+                                "/api/pagos/pedido/**").authenticated()
                         .pathMatchers("/api/carrito/**", "/api/v1/carrito/**").authenticated()
 
                         // Info interna, configuracion critica y usuarios administrativos.
@@ -137,6 +141,8 @@ public class SecurityConfig {
                         // Ventas: lectura y atencion de pedidos para VENDEDORA.
                         .pathMatchers(HttpMethod.GET, "/api/v1/clientes/**", "/api/v1/pedidos/**",
                                 "/api/v1/detalles/**", "/api/v1/detalles-pedido/**")
+                        .hasAnyRole("SUPER_ADMIN", "VENDEDORA")
+                        .pathMatchers(HttpMethod.PATCH, "/api/v1/pedidos/*/estado")
                         .hasAnyRole("SUPER_ADMIN", "VENDEDORA")
                         .pathMatchers("/api/v1/clientes/**", "/api/v1/pedidos/**", "/api/v1/detalles/**",
                                 "/api/v1/detalles-pedido/**")

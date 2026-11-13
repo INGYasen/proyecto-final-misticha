@@ -95,7 +95,8 @@ export class AdminComponent implements OnInit {
     editingDescuento: Descuento | null = null;
     showDescuentoModal = false;
 
-    readonly chartDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    chartDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    private clientesPorId = new Map<number, string>();
 
     constructor(
         private http: HttpClient,
@@ -231,12 +232,10 @@ export class AdminComponent implements OnInit {
         this.http.get<any[]>(`${this.base}/api/v1/pedidos`).subscribe({
             next: pedidos => {
                 this.ordenesRecientes = [...pedidos]
-                    .sort((a, b) => new Date(b.fechaPedido).getTime() - new Date(a.fechaPedido).getTime())
-                    .slice(0, 4);
-                const today = new Date().toDateString();
-                this.metrics.pedidosHoy = pedidos.filter(p =>
-                    new Date(p.fechaPedido).toDateString() === today
-                ).length;
+                    .sort((a, b) => this.instante(b.fechaPedido) - this.instante(a.fechaPedido))
+                    .slice(0, 6);
+                const hoy = new Date();
+                this.metrics.pedidosHoy = pedidos.filter(p => this.mismoDia(p.fechaPedido, hoy)).length;
                 this.metrics.pedidosPorEstado = { PENDIENTE: 0, PAGADO: 0, CANCELADO: 0, CONFIRMADO: 0, ENVIADO: 0, ENTREGADO: 0 };
                 pedidos.forEach(p => {
                     const estado = p.estadoPedido || 'PENDIENTE';
@@ -261,6 +260,22 @@ export class AdminComponent implements OnInit {
             error: () => this.showSystemAlert('inventario'),
         });
 
+        this.http.get<any[]>(`${this.base}/api/v1/lotes`).subscribe({
+            next: lotes => this.metrics.lotesTotal = Array.isArray(lotes) ? lotes.length : 0,
+            error: () => this.showSystemAlert('lotes de acopio'),
+        });
+
+        this.http.get<any[]>(`${this.base}/api/v1/clientes`).subscribe({
+            next: clientes => {
+                this.clientesPorId.clear();
+                (clientes || []).forEach(cliente => {
+                    const nombre = [cliente.nombres, cliente.apellidos].filter(Boolean).join(' ').trim();
+                    if (cliente.idCliente && nombre) this.clientesPorId.set(Number(cliente.idCliente), nombre);
+                });
+            },
+            error: () => undefined,
+        });
+
         this.loadPaymentMetrics();
         this.loadPublishedProductsMetric();
     }
@@ -270,7 +285,8 @@ export class AdminComponent implements OnInit {
     }
 
     chartBarHeight(val: number): number {
-        return Math.round((val / this.chartMax) * 100);
+        if (!val) return 0;
+        return Math.max(14, Math.round((val / this.chartMax) * 100));
     }
 
     getTotalPedidos(): number {
@@ -282,14 +298,45 @@ export class AdminComponent implements OnInit {
             ['PAGADO', 'CONFIRMADO', 'ENVIADO', 'ENTREGADO'].includes(p.estadoPedido)
         );
         this.metrics.totalVentas = cobrados.reduce((sum, p) => sum + Number(p.totalPagar || 0), 0);
-        const days = Array.from({ length: 7 }, (_, i) => {
+        if (this.soloLectura) this.metrics.pagosConfirmados = cobrados.length;
+        const dias = Array.from({ length: 8 }, (_, i) => {
             const d = new Date();
-            d.setDate(d.getDate() - (6 - i));
-            return d.toDateString();
+            d.setHours(12, 0, 0, 0);
+            d.setDate(d.getDate() - (7 - i));
+            return d;
         });
-        this.metrics.ingresosSemanales = days.map(day => cobrados
-            .filter(p => new Date(p.fechaPedido).toDateString() === day)
+        this.chartDays = dias.map(d =>
+            `${d.getDate()}/${String(d.getMonth() + 1).padStart(2, '0')}`
+        );
+        this.metrics.ingresosSemanales = dias.map(dia => cobrados
+            .filter(p => this.mismoDia(p.fechaPedido, dia))
             .reduce((sum, p) => sum + Number(p.totalPagar || 0), 0));
+    }
+
+    nombreDeCliente(pedido: any): string {
+        const guardado = this.clientesPorId.get(Number(pedido?.idCliente));
+        if (guardado) return guardado;
+        const cliente = pedido?.cliente;
+        const nombre = [cliente?.nombres, cliente?.apellidos].filter(Boolean).join(' ').trim();
+        return nombre || pedido?.nombreCliente || `Cliente #${pedido?.idCliente ?? ''}`;
+    }
+
+    private instante(valor: any): number {
+        if (Array.isArray(valor)) {
+            const [anio, mes, dia, hora = 0, minuto = 0, segundo = 0] = valor;
+            return new Date(anio, (mes || 1) - 1, dia || 1, hora, minuto, segundo).getTime();
+        }
+        const tiempo = new Date(valor).getTime();
+        return Number.isNaN(tiempo) ? 0 : tiempo;
+    }
+
+    private mismoDia(valor: any, dia: Date): boolean {
+        const tiempo = this.instante(valor);
+        if (!tiempo) return false;
+        const fecha = new Date(tiempo);
+        return fecha.getFullYear() === dia.getFullYear()
+            && fecha.getMonth() === dia.getMonth()
+            && fecha.getDate() === dia.getDate();
     }
 
     // ── PROVEEDORES ───────────────────────────────────────────────

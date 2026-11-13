@@ -1,5 +1,6 @@
 package com.raymisupreme.msventas.controller;
 
+import com.raymisupreme.msventas.dto.ActualizarEstadoPedidoRequest;
 import com.raymisupreme.msventas.dto.ConfirmarPedidoRequest;
 import com.raymisupreme.msventas.dto.PedidoRequest;
 import com.raymisupreme.msventas.dto.PedidoResponse;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -80,6 +82,15 @@ public class PedidoController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<PedidoResponse> actualizar(@PathVariable Long idPedido, @RequestBody PedidoRequest request) {
         return ResponseEntity.ok(pedidoService.actualizar(idPedido, request));
+    }
+
+    // Admin / panel: cambio de estado (CONFIRMADO, ENVIADO, ENTREGADO, CANCELADO, etc.).
+    @PatchMapping("/{idPedido}/estado")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','VENDEDORA')")
+    public ResponseEntity<PedidoResponse> actualizarEstado(@PathVariable Long idPedido,
+                                                           @RequestBody ActualizarEstadoPedidoRequest request) {
+        String estado = request != null ? request.getEstadoPedido() : null;
+        return ResponseEntity.ok(pedidoService.actualizarEstado(idPedido, estado));
     }
 
     @PostMapping("/{idPedido}/confirmar")

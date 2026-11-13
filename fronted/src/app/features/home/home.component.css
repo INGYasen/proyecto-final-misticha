@@ -228,10 +228,18 @@
 .promo-banner__title span { color: var(--color-oro); }
 .promo-banner__text {
   max-width: 34rem;
-  margin: 0 0 1.6rem;
+  margin: 0 0 0.7rem;
   color: rgba(255, 255, 255, 0.9);
   font-size: clamp(0.9rem, 0.4vw + 0.8rem, 1.05rem);
   line-height: 1.7;
+}
+.promo-banner__note {
+  max-width: 32rem;
+  margin: 0 0 1.6rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: clamp(0.72rem, 0.25vw + 0.68rem, 0.8rem);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
 }
 
 @media (max-width: 760px) {

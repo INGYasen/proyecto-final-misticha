@@ -14,10 +14,18 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
     ports:
       - "9091:8080"    # 9091 en host → no choca con el keycloak de prod (9090)
+    networks:
+      - ms-net
     volumes:
       - keycloak_auth_dev:/opt/keycloak/data
+
+networks:
+  ms-net:
+    name: ms-net
+    external: true
 
 volumes:
   keycloak_auth_dev:
