@@ -1,6 +1,6 @@
 # Raymi Supreme
 
-Equipo 12, curso DIST, semestre 2026-2, campus Juliaca.
+Equipo 12. Desarrollo de aplicaciones distribuidas, semestre 2026-2, campus Juliaca.
 
 Tienda de prendas andinas de taller (alpaca, Puno y Cusco). El front es Angular. Al backend se entra por el API Gateway.
 
@@ -10,7 +10,7 @@ Flujo de compra: catálogo → carrito → checkout → pedido `PENDIENTE` → M
 
 ## Equipo
 
-Equipo 12 — DIST 2026-2.
+Equipo 12. Desarrollo de aplicaciones distribuidas, 2026-2.
 
 - Yasen Cutipa Mayhua
 - Russman Keny Torres Lopez
